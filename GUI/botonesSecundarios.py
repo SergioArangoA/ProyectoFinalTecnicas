@@ -1,34 +1,83 @@
 import tkinter as tk
 from tkinter import ttk
 
-"""VENTANA INVENTARIO SECUNDARIA"""
-#SECONDARY INVENTORY WINDOW
-def abrirInventario(Ventana_principal):
-    #Create new window
-        Ventana_principal.withdraw() #Hides the main window when the secondary window is opened
-        ventana_inventario = tk.Toplevel(bg="#EAE4D5") #Toplevel creates a new secondary window and bg adds color
-        """Toplevel crea una nueva ventana secundaria diferente a tk.TK solo puede haber 1 solo TK"""
-        ventana_inventario.title("Gestión de Inventario")
-        ventana_inventario.geometry("500x820")
+#INVENTORY WINDOW
+def abrirInventario(ventanaPrincipal):
+    """Opens a window, in which you can choose if you want to see both inventories, borrowed books's history and the total price of an author's books and average author's book weight in the inventory"""
 
-        titulo= tk.Label(ventana_inventario, text="INVENTARIO", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
-        titulo.pack(pady=20)
+    #INVENTORY WINDOW SETTINGS
+
+    ventanaPrincipal.withdraw() #Hides the main window when the secondary window is opened
+    ventanaInventario = tk.Toplevel(bg="#EAE4D5") #Toplevel creates a new secondary window and bg adds color
+    ventanaInventario.protocol("WM_DELETE_WINDOW", lambda: ventanaPrincipal.destroy()) #Closes the main menu window once the user clicks the X button
+    #Toplevel creates a new secondary window different from the main one (TK). There can only be one TK window.
+    ventanaInventario.title("Gestión de Inventario")
+    ventanaInventario.state('zoomed')
+    ventanaInventario.resizable(True, True)
+    ventanaInventario.rowconfigure(0,weight=1)
+    ventanaInventario.rowconfigure(1,weight=1)
+    ventanaInventario.rowconfigure(2,weight=1)
+    ventanaInventario.columnconfigure(0,weight=1)
+
+    #INVENTORY'S WINDOWS FRAMES
+    frameTitulo = tk.Frame(ventanaInventario,bg="#EAE4D5")
+    frameTitulo.grid(row=0,column=0)
+    frameTitulo.columnconfigure(0,weight=1)
+    frameTitulo.rowconfigure(0,weight=1)
+
+    frameBotones = tk.Frame(ventanaInventario,bg="#EAE4D5")
+    frameBotones.grid(row=1,column=0)
+    frameBotones.columnconfigure(0,weight=1)
+    frameBotones.columnconfigure(1,weight=1)
+    frameBotones.columnconfigure(2,weight=1)
+    frameBotones.rowconfigure(0,weight=1)
+
+    frameEstadisticas = tk.Frame(ventanaInventario,bg="#EAE4D5")
+    frameEstadisticas.grid(row=2,column=0)
+
+    #INVENTORY TITLE
+
+    titulo= tk.Label(frameTitulo, text="INVENTARIO", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    titulo.grid(row=0,column=0,sticky="nsew")
+
+    #Secondary Buttons inside
+
+    InventarioGeneral= tk.Button(frameBotones, text="Inventario general", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    InventarioGeneral.grid(row=0,column=0,sticky="nsew",padx=20)
+
+    InventarioOrdenado= tk.Button(frameBotones, text="Inventario ordenado", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    InventarioOrdenado.grid(row=0,column=1,sticky="nsew",padx=20)
+
+    historialPrestamos = tk.Button(frameBotones,text="Historal de préstamos",width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
+    historialPrestamos.grid(row=0,column=2,sticky="nsew",padx=20)
+
+    #AUTHOR'S BOOKS STATISTICS
     
-        #Secondary Buttons inside
+    tituloEstadisticas= tk.Label(frameEstadisticas, text="ESTADISTICAS LIBROS AUTOR", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    tituloEstadisticas.grid(row=0,column=1,sticky="nsew")
 
-        InventarioGeneral= tk.Button(ventana_inventario, text="Inventario General", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        InventarioGeneral.pack(pady=10)
+    labelAutor = tk.Label(frameEstadisticas,text="Nombre autor: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelAutor.grid(row=1,column=0)
+    CampoTextoAutor= tk.Entry(frameEstadisticas,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoAutor.grid(row=1,column=1)
+    botonBuscar = tk.Button(frameEstadisticas,text="Buscar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonBuscar.grid(row=1,column=2,sticky="nsew")
 
-        InventarioOrdenado= tk.Button(ventana_inventario, text="Inventario Ordenado", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        InventarioOrdenado.pack(pady=10)
+    labelPeso = tk.Label(frameEstadisticas,text="Peso promedio(kg): ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelPeso.grid(row=2, column=0,pady=10)
+    CampoPeso= tk.Entry(frameEstadisticas,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoPeso.grid(row=2,column=1,pady=10)
 
-        """BOTÓN VOLVER: Cierra la ventana secundaria y vuelve a mostrar el menú principal"""
-        #Volver Button: Closes the secondary window and shows the main menu again
+    labelValorTotal= tk.Label(frameEstadisticas,text="Total de valor de libros: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelValorTotal.grid(row=3, column=0,sticky="nsew",pady=10)
+    CampoValorTotal= tk.Entry(frameEstadisticas,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoValorTotal.grid(row=3,column=1,pady=10)
 
-        volver=tk.Button(ventana_inventario, text="VOLVER AL MENÚ", command=lambda: [ventana_inventario.destroy(), Ventana_principal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12)).pack(pady=20)
-        #.destroy() method closes the secondary window, 
-        #.deiconify() method shows the main window agai
+    volver=tk.Button(frameEstadisticas, text="VOLVER AL MENÚ", command=lambda: [ventanaInventario.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=4, column=0, padx=10, pady=20)
+    #Returns to the main menu. .destroy() closes the window and .decoinify() shows the main window again
 #SECONDARY RESERVATION WINDOW
+
+
 def abrirReservas(Ventana_principal):
     #Create new window
         root = tk.Tk()
@@ -79,145 +128,282 @@ def abrirReservas(Ventana_principal):
 
         root.mainloop()
 
-        
-        '''
-        Ventana_principal.withdraw()
-        ventana_reservas = tk.Toplevel(bg="#EAE4D5")
-        ventana_reservas.title("Gestión de Reservas")
-        ventana_reservas.geometry("500x800")
+#STANDS'S CRUD WINDOW
+def abrirEstanterias(ventanaPrincipal):
+    """Opens the Book class CRUD"""
 
-        CampoTextoReserva = tk.Entry(ventana_reservas,font=("Palatino Linotype", 14),width=30,bg="#EAE4D5",relief="flat",bd=2)
-        CampoTextoReserva.pack(pady=20)
+    #CRUD WINDOW SETTINGS
+    ventanaPrincipal.withdraw() #Hides the principal window
+    ventanaEstantes = tk.Toplevel(bg="#EAE4D5") #Creates a window with that background color
+    ventanaEstantes.protocol("WM_DELETE_WINDOW", lambda: ventanaPrincipal.destroy()) #Also closes the main menu window once the user hits the close button
+    ventanaEstantes.title("Gestión de Libros")
+    ventanaEstantes.state('zoomed') #Se abre en pantalla completa
+    ventanaEstantes.columnconfigure(0, weight=1) #Allows the column "0" to be resizable 
+    ventanaEstantes.rowconfigure(2, weight=1) #Allows the row "2" to be resizable 
 
-        titulo= tk.Label(ventana_reservas, text="RESERVAS", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
-        titulo.pack(pady=20)
+    #CRUD WINDOW FRAMES
+
+    frameEstantesContenido = tk.Frame(ventanaEstantes,bg="#EAE4D5",bd=5)
+    frameEstantesContenido.grid(row=1,column=0,sticky="nsew") #sticky = "nsew" allows the frame to be resizable
+    frameEstantesContenido.columnconfigure(0,weight=1)
+    frameEstantesContenido.columnconfigure(3,weight=1)
+
+    frameEstantesIngresar = tk.Frame(frameEstantesContenido,bg="#EAE4D5",bd=5)
+    frameEstantesIngresar.grid(row=1,column=0,sticky="nsew")
+    frameEstantesIngresar.columnconfigure(1, weight=1)
+
+    frameEstantesImprimir = tk.Frame(frameEstantesContenido,bg="#EAE4D5",bd=5)
+    frameEstantesImprimir.grid(row=1,column=3,sticky="nsew")
+    frameEstantesImprimir.columnconfigure(1, weight=1)
+
+    frameBotones = tk.Frame(ventanaEstantes, bg="#EAE4D5",bd=5)
+    frameBotones.grid(row=2,column=0,sticky="nsew")
+    frameBotones.columnconfigure(0,weight=1)
+    frameBotones.columnconfigure(1,weight=1)
+    frameBotones.columnconfigure(2,weight=1)
+    frameBotones.columnconfigure(3,weight=1)
+
+    #CRUD WINDOW TITLE
+
+    titulo= tk.Label(frameEstantesContenido, text="ESTANTES", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    titulo.grid(row=0,column=2)
     
-        #Secondary Buttons inside
-        FrameBotones = tk.Frame(ventana_reservas, bg="#E2D9C8")
-        FrameBotones.pack(pady=20)
+    #BOOK'S ISBN LABELS AND TEXTBOXES
+    #tk.Entry is a textbox, if the state is disabled, means the user can't write on it
+    #relief="flat" makes the entry field flat without 3D borders, bd=2 sets the border width to 2 pixels
 
-        CrearReserva=tk.Button(ventana_reservas, text="Crear", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        CrearReserva.pack(pady=10)
+    labelIngresarISBN = tk.Label(frameLibrosIngresar, text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarISBN.grid(row=0,column=0)
+    CampoTextoISBN= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoISBN.grid(row=0,column=1,sticky="nsew")
+    CampoImprimirISBN= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirISBN.grid(row=0,column=1,sticky="nsew")
 
-        Historial= tk.Button(ventana_reservas, text="Historial", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F") 
-        Historial.pack(pady=10)
+    #BOOK'S TITLE LABELS AND TEXTBOXES
 
-        ListaDeEspera= tk.Button(ventana_reservas, text="Lista de Espera", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        ListaDeEspera.pack(pady=10)
+    labelIngresarTitulo= tk.Label(frameLibrosIngresar, text="Título: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarTitulo.grid(row=1,column=0,pady=10)
+    CampoTextoTitulo= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoTitulo.grid(row=1,column=1,pady=10,sticky="nsew")
+    CampoImprimirTitulo= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirTitulo.grid(row=1,column=1,pady=10,sticky="nsew")
 
-        BuscarReserva= tk.Button(ventana_reservas, text="Buscar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        BuscarReserva.pack(pady=10)
+    #BOOK'S AUTHOR LABELS AND TEXTBOXES
 
-        ModificarReserva= tk.Button(ventana_reservas, text="Modificar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        ModificarReserva.pack(pady=10)
+    labelIngresarAutor =tk.Label(frameLibrosIngresar, text="Autor: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarAutor.grid(row=2,column=0,pady=10)
+    CampoTextoAutor= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoAutor.grid(row=2,column=1,pady=10,sticky="nsew")
+    CampoImprimirAutor= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirAutor.grid(row=2,column=1,pady=10,sticky="nsew")
 
-        EliminarReserva= tk.Button(ventana_reservas, text="Eliminar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        EliminarReserva.pack(pady=10)
-        #Volver Button
-        volver=tk.Button(ventana_reservas, text="VOLVER AL MENÚ", command=lambda: [ventana_reservas.destroy(),Ventana_principal.deiconify()],bg="#213555",fg="white", font=("Palatino Linotype", 12)).pack(pady=20)
+    #BOOK'S WEIGHT LABELS AND TEXTBOXES
 
-        canvas = tk.Canvas(FrameBotones)
-        canvas.pack(side="left", fill="both", expand=True)
-        
-        scrollbar = ttk.Scrollbar(FrameBotones, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side="right", fill="y")
-        '''
+    labelIngresarPeso =tk.Label(frameLibrosIngresar, text="Peso(kg): ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarPeso.grid(row=3,column=0,pady=10)
+    CampoTextoPeso= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoPeso.grid(row=3,column=1,pady=10,sticky="nsew")
+    CampoImprimirPeso= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirPeso.grid(row=3,column=1,pady=10,sticky="nsew")
 
-#SECONDARY SHELVES WINDOW
-def abrirEstanterias(Ventana_principal):
-    #Crete new window
-        Ventana_principal.withdraw()
-        ventana_estanterias = tk.Toplevel(bg="#EAE4D5")
-        ventana_estanterias.title("Gestión de Estanterias")
-        ventana_estanterias.geometry("500x800")
+    #BOOK'S PRICE LABELS AND TEXTBOXES
 
-        titulo= tk.Label(ventana_estanterias, text="ESTANTERIAS", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
-        titulo.pack(pady=20)
+    labelIngresarPrecio =tk.Label(frameLibrosIngresar, text="Precio: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarPrecio.grid(row=4,column=0,pady=10)
+    CampoTextoPrecio= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoPrecio.grid(row=4,column=1,pady=10,sticky="nsew")
+    CampoImprimirPrecio= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirPrecio.grid(row=4,column=1,pady=10,sticky="nsew")
+
+    #BOOK'S INVENTORY AMOUNT LABELS AND TEXTBOXES
+
+    labelVaciaEnInventario =tk.Label(frameLibrosIngresar, text="",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelVaciaEnInventario.grid(row=5,column=0,pady=10)
+    labelEnInventario =tk.Label(frameLibrosImprimir, text="En inventario: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelEnInventario.grid(row=5,column=0,pady=10)
+    CampoImprimirEnInventario= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirEnInventario.grid(row=5,column=1,pady=10,sticky="nsew")
+
+    #BOOK'S BORROWED AMOUNT LABELS AND TEXTBOXES
     
-        #Secondary Buttons inside
-        CrearEstanteria= tk.Button(ventana_estanterias, text="Agregar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        CrearEstanteria.pack(pady=10)
+    labelVacioPrestados=tk.Label(frameLibrosIngresar, text="",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelVacioPrestados.grid(row=6,column=0,pady=10)
+    labelPrestados =tk.Label(frameLibrosImprimir, text="Prestados: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelPrestados.grid(row=6,column=0,pady=10)
+    CampoImprimirPrestados= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirPrestados.grid(row=6,column=1,pady=10,sticky="nsew")
 
-        VerEstanterias= tk.Button(ventana_estanterias, text="Lista Estanterias", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        VerEstanterias.pack(pady=10)
+    #BOOK'S STANDS LOCATIONS LABELS AND TEXTBOXES
 
-        ModificarEstanteria= tk.Button(ventana_estanterias, text="Modificar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        ModificarEstanteria.pack(pady=10)
+    labelVacioEnEstantes =tk.Label(frameLibrosIngresar, text="",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelVacioEnEstantes.grid(row=7,column=0,pady=10)
+    labelEnEstantes =tk.Label(frameLibrosImprimir, text="En estantes: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelEnEstantes.grid(row=7,column=0,pady=10)
+    CampoImprimirEnEstantes= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirEnEstantes.grid(row=7,column=1,pady=10,sticky="nsew")    
+    
+    #CRUD BUTTONS
 
-        BuscarEstanteria=tk.Button(ventana_estanterias, text="Buscar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        BuscarEstanteria.pack(pady=10)
+    AgregarLibro= tk.Button(frameBotones, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
 
-        EliminarEstanteria= tk.Button(ventana_estanterias, text="Eliminar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        EliminarEstanteria.pack(pady=10)
-        #Volver Button
-        volver=tk.Button(ventana_estanterias, text="VOLVER AL MENÚ", command=lambda: [ventana_estanterias.destroy(), Ventana_principal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12)).pack(pady=20)
-#SECONDARY USERS WINDOW
+    ModificarLibro= tk.Button(frameBotones, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
+
+    BuscarLibro=tk.Button(frameBotones, text="Buscar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
+
+    EliminarLibro= tk.Button(frameBotones, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
+
+    #RETURN BUTTON
+    volver=tk.Button(frameBotones, text="VOLVER AL MENÚ", command=lambda: [ventanaLibros.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=1, column=0, padx=10, pady=20)
 def abrirUsuarios(Ventana_principal):
-    #Create new window
-        Ventana_principal.withdraw()
-        ventana_usuarios = tk.Toplevel(bg="#EAE4D5")
-        ventana_usuarios.title("Gestión de Usuarios")
-        ventana_usuarios.geometry("500x800")
+    Ventana_principal.withdraw()
+    ventana_usuarios = tk.Toplevel(bg="#EAE4D5")
+    ventana_usuarios.title("Gestión de Usuarios")
+    ventana_usuarios.geometry("500x800")
 
-        titulo= tk.Label(ventana_usuarios, text="USUARIOS", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
-        titulo.pack(pady=20)
+    titulo= tk.Label(ventana_usuarios, text="USUARIOS", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    titulo.pack(pady=20)
+
+    #Secondary Buttons inside
+    AgregarUsuario= tk.Button(ventana_usuarios, text="Agrega", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    AgregarUsuario.pack(pady=10)
+
+    ModificarUsuarios= tk.Button(ventana_usuarios, text="Modificar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    ModificarUsuarios.pack(pady=10)
+
+    BuscarUsuario=tk.Button(ventana_usuarios, text="Buscar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    BuscarUsuario.pack(pady=10)
+
+    EliminarUsuario= tk.Button(ventana_usuarios, text="Eliminar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    EliminarUsuario.pack(pady=10)
+    #Volver Button
+    volver=tk.Button(ventana_usuarios, text="VOLVER AL MENÚ", command=lambda: [ventana_usuarios.destroy(), Ventana_principal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12)).pack(pady=20)
+
+
+
+
+#BOOKS'S CRUD WINDOW
+def abrirLibros(ventanaPrincipal):
+    """Opens the Book class CRUD"""
+
+    #CRUD WINDOW SETTINGS
+    ventanaPrincipal.withdraw() #Hides the principal window
+    ventanaLibros = tk.Toplevel(bg="#EAE4D5") #Creates a window with that background color
+    ventanaLibros.protocol("WM_DELETE_WINDOW", lambda: ventanaPrincipal.destroy()) #Also closes the main menu window once the user hits the close button
+    ventanaLibros.title("Gestión de Libros")
+    ventanaLibros.state('zoomed') #Se abre en pantalla completa
+    ventanaLibros.columnconfigure(0, weight=1) #Allows the column "0" to be resizable 
+    ventanaLibros.rowconfigure(2, weight=1) #Allows the row "2" to be resizable 
+
+    #CRUD WINDOW FRAMES
+
+    frameLibrosContenido = tk.Frame(ventanaLibros,bg="#EAE4D5",bd=5)
+    frameLibrosContenido.grid(row=1,column=0,sticky="nsew") #sticky = "nsew" allows the frame to be resizable
+    frameLibrosContenido.columnconfigure(0,weight=1)
+    frameLibrosContenido.columnconfigure(3,weight=1)
+
+    frameLibrosIngresar = tk.Frame(frameLibrosContenido,bg="#EAE4D5",bd=5)
+    frameLibrosIngresar.grid(row=1,column=0,sticky="nsew")
+    frameLibrosIngresar.columnconfigure(1, weight=1)
+
+    frameLibrosImprimir = tk.Frame(frameLibrosContenido,bg="#EAE4D5",bd=5)
+    frameLibrosImprimir.grid(row=1,column=3,sticky="nsew")
+    frameLibrosImprimir.columnconfigure(1, weight=1)
+
+    frameBotones = tk.Frame(ventanaLibros, bg="#EAE4D5",bd=5)
+    frameBotones.grid(row=2,column=0,sticky="nsew")
+    frameBotones.columnconfigure(0,weight=1)
+    frameBotones.columnconfigure(1,weight=1)
+    frameBotones.columnconfigure(2,weight=1)
+    frameBotones.columnconfigure(3,weight=1)
+
+    #CRUD WINDOW TITLE
+
+    titulo= tk.Label(frameLibrosContenido, text="LIBROS", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    titulo.grid(row=0,column=2)
     
-        #Secondary Buttons inside
-        AgregarUsuario= tk.Button(ventana_usuarios, text="Agrega", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        AgregarUsuario.pack(pady=10)
+    #BOOK'S ISBN LABELS AND TEXTBOXES
+    #tk.Entry is a textbox, if the state is disabled, means the user can't write on it
+    #relief="flat" makes the entry field flat without 3D borders, bd=2 sets the border width to 2 pixels
 
-        ModificarUsuarios= tk.Button(ventana_usuarios, text="Modificar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        ModificarUsuarios.pack(pady=10)
+    labelIngresarISBN = tk.Label(frameLibrosIngresar, text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarISBN.grid(row=0,column=0)
+    CampoTextoISBN= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoISBN.grid(row=0,column=1,sticky="nsew")
+    CampoImprimirISBN= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirISBN.grid(row=0,column=1,sticky="nsew")
 
-        BuscarUsuario=tk.Button(ventana_usuarios, text="Buscar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        BuscarUsuario.pack(pady=10)
+    #BOOK'S TITLE LABELS AND TEXTBOXES
 
-        EliminarUsuario= tk.Button(ventana_usuarios, text="Eliminar", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
-        EliminarUsuario.pack(pady=10)
-        #Volver Button
-        volver=tk.Button(ventana_usuarios, text="VOLVER AL MENÚ", command=lambda: [ventana_usuarios.destroy(), Ventana_principal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12)).pack(pady=20)
-#SECONDARY BOOKS WINDOW
-def abrirLibros(Ventana_principal):
-    #Create new window
-        Ventana_principal.withdraw()
-        ventana_libros = tk.Toplevel(bg="#EAE4D5")
-        ventana_libros.title("Gestión de Libros")
-        ventana_libros.geometry("500x800")
+    labelIngresarTitulo= tk.Label(frameLibrosIngresar, text="Título: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarTitulo.grid(row=1,column=0,pady=10)
+    CampoTextoTitulo= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoTitulo.grid(row=1,column=1,pady=10,sticky="nsew")
+    CampoImprimirTitulo= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirTitulo.grid(row=1,column=1,pady=10,sticky="nsew")
 
-        titulo= tk.Label(ventana_libros, text="LIBROS", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
-        titulo.pack(pady=20)
+    #BOOK'S AUTHOR LABELS AND TEXTBOXES
 
-        #Text Entry Field
-        CampoTextoISBN= tk.Entry(ventana_libros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-        CampoTextoISBN.pack(pady=10)
-        #relif="flat" makes the entry field flat without 3D borders, bd=2 sets the border width to 2 pixels
-        """Entry indica que es un campo de texto donde el usuario puede escribir informacion"""
+    labelIngresarAutor =tk.Label(frameLibrosIngresar, text="Autor: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarAutor.grid(row=2,column=0,pady=10)
+    CampoTextoAutor= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoAutor.grid(row=2,column=1,pady=10,sticky="nsew")
+    CampoImprimirAutor= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirAutor.grid(row=2,column=1,pady=10,sticky="nsew")
 
-        CampoTextoAutor= tk.Entry(ventana_libros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-        CampoTextoAutor.pack(pady=10)
+    #BOOK'S WEIGHT LABELS AND TEXTBOXES
 
-        CampoTextoTitulo= tk.Entry(ventana_libros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-        CampoTextoTitulo.pack(pady=10)
+    labelIngresarPeso =tk.Label(frameLibrosIngresar, text="Peso(kg): ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarPeso.grid(row=3,column=0,pady=10)
+    CampoTextoPeso= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoPeso.grid(row=3,column=1,pady=10,sticky="nsew")
+    CampoImprimirPeso= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirPeso.grid(row=3,column=1,pady=10,sticky="nsew")
+
+    #BOOK'S PRICE LABELS AND TEXTBOXES
+
+    labelIngresarPrecio =tk.Label(frameLibrosIngresar, text="Precio: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarPrecio.grid(row=4,column=0,pady=10)
+    CampoTextoPrecio= tk.Entry(frameLibrosIngresar,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoPrecio.grid(row=4,column=1,pady=10,sticky="nsew")
+    CampoImprimirPrecio= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirPrecio.grid(row=4,column=1,pady=10,sticky="nsew")
+
+    #BOOK'S INVENTORY AMOUNT LABELS AND TEXTBOXES
+
+    labelVaciaEnInventario =tk.Label(frameLibrosIngresar, text="",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelVaciaEnInventario.grid(row=5,column=0,pady=10)
+    labelEnInventario =tk.Label(frameLibrosImprimir, text="En inventario: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelEnInventario.grid(row=5,column=0,pady=10)
+    CampoImprimirEnInventario= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirEnInventario.grid(row=5,column=1,pady=10,sticky="nsew")
+
+    #BOOK'S BORROWED AMOUNT LABELS AND TEXTBOXES
     
-        #Secondary Buttons inside
+    labelVacioPrestados=tk.Label(frameLibrosIngresar, text="",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelVacioPrestados.grid(row=6,column=0,pady=10)
+    labelPrestados =tk.Label(frameLibrosImprimir, text="Prestados: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelPrestados.grid(row=6,column=0,pady=10)
+    CampoImprimirPrestados= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirPrestados.grid(row=6,column=1,pady=10,sticky="nsew")
 
-        FrameBotones= tk.Frame(ventana_libros, bg="#E2D9C8") #Creates a frame to group buttons together
-        FrameBotones.pack(side="bottom", pady=(0,10), expand=False)
+    #BOOK'S STANDS LOCATIONS LABELS AND TEXTBOXES
 
-        AgregarLibro= tk.Button(FrameBotones, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20)
+    labelVacioEnEstantes =tk.Label(frameLibrosIngresar, text="",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelVacioEnEstantes.grid(row=7,column=0,pady=10)
+    labelEnEstantes =tk.Label(frameLibrosImprimir, text="En estantes: ",font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelEnEstantes.grid(row=7,column=0,pady=10)
+    CampoImprimirEnEstantes= tk.Entry(frameLibrosImprimir,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirEnEstantes.grid(row=7,column=1,pady=10,sticky="nsew")    
+    
+    #CRUD BUTTONS
 
-        ModificarLibro= tk.Button(FrameBotones, ventana_libros, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20)
+    AgregarLibro= tk.Button(frameBotones, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
 
-        BuscarLibro=tk.Button(FrameBotones, ventana_libros, text="Buscar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20)
+    ModificarLibro= tk.Button(frameBotones, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
 
-        EliminarLibro= tk.Button(FrameBotones,ventana_libros, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20)
+    BuscarLibro=tk.Button(frameBotones, text="Buscar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
 
-        #Volver Button
-        volver=tk.Button(ventana_libros, text="VOLVER AL MENÚ", command=lambda: [ventana_libros.destroy(), Ventana_principal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20)
-        volver.pack(side="bottom", pady=20)
+    EliminarLibro= tk.Button(frameBotones, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
 
-        canvas = tk.Canvas(FrameBotones)
-        canvas.pack(side="left", fill="both", expand=True)
-
-        scrollbar = ttk.Scrollbar(FrameBotones, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side="right", fill="y")
+    #RETURN BUTTON
+    volver=tk.Button(frameBotones, text="VOLVER AL MENÚ", command=lambda: [ventanaLibros.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=1, column=0, padx=10, pady=20)
