@@ -30,8 +30,6 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
     after being created"""
 
     inventarioGeneral.append(Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera))
-
-
     isbnNuevo =isbn.strip("-")
     insertado=False #Flag Var
 
@@ -88,18 +86,25 @@ initializing the necessary parameters, variables and starting the exploration fr
         """This method is the recursive technique, calculates the average weight of a collection of books from a specific author"""
 
         if n==len(inventarioOrdenado):
+        #Base case, returns the final average sum of the books weights
             if contador==0:
+            #If the is counter is zero and the list has reach the end it means that there are no books of that author, returns zero and prints the message
                 print("No hay libros relacionados con ese autor")
                 return 0
             return pesoPromedio/contador
 
-        LibroActual = inventarioOrdenado[n]
+        LibroActual = inventarioOrdenado[n] 
+        #This extracts from the object (in this case named as 'LibroActual') the actual book 
 
         if LibroActual.autor==autor:
+        #It compares the Actual Book Author (.autor) and the author that the user is looking for. If its found adds to the counter one and adds
+        # to the weight sum. Returns the recursive call adding to the index 'n' one continuing the recursion
             contador+=1
-            pesoPromedio+=LibroActual.precio
+            pesoPromedio+=LibroActual.peso
 
         return calculoPesoPromedio(n+1, contador, pesoPromedio)
                                    
     return calculoPesoPromedio(n, contador, pesoPromedio)
+    #This allows that the response from 'calculoPesoPromedio' is working on the general code and can be called, else it won't work
+    #because the wrapper function is not returning anything
 
