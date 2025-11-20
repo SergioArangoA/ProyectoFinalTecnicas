@@ -1,5 +1,8 @@
 import tkinter as tk
-from botonesSecundarios import abrirInventario, abrirReservas, abrirEstanterias, abrirUsuarios, abrirLibros
+from ventanaInventario import *
+from ventanaEstanterias import*
+from ventanaUsuarios import *
+from ventanaLibros import*
 #Imports functions for the secondary windows from the file botonesSecundarios.py
 """Importa las funciones de las ventanas secundarias desde el archivo botonesSecundarios.py"""
 
@@ -25,13 +28,9 @@ titulo.pack(pady= 35) #The pack method places the title in the window and pady g
 ButtonInventario= tk.Button(Ventana_principal, text="Inventario", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonInventario.pack(pady=20)
 ButtonInventario.config(command=lambda: abrirInventario(Ventana_principal))#Calls the abrirInventario function from the botonesSecundarios.py file, linking the button to the window
-## Lambda is created as a function that calls the abrirInventario function from the botonesSecundarios.py file, passes the main window as an argument, and links the button to the window
+## Lambda is created as a function that calls the abrirInventario function from5 the botonesSecundarios.py file, passes the main window as an argument, and links the button to the window
 """Lambda se crea como funcion que Llama a la funcion abrirInventario del archivo botonesSecundarios.py, y pasa ventana principal como
 argumento y enlazaza boton con ventana"""
-
-ButtonReservas= tk.Button(Ventana_principal, text="Reservas", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
-ButtonReservas.pack(pady=20)
-ButtonReservas.config(command=lambda: abrirReservas(Ventana_principal))#Calls the abrirReservas function from the botonesSecundarios.py file, linking the button to the window
 
 ButtonEstanterias= tk.Button(Ventana_principal, text="Estanterias", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonEstanterias.pack(pady=20)
@@ -39,7 +38,7 @@ ButtonEstanterias.config(command=lambda: abrirEstanterias(Ventana_principal)) #C
 
 ButtonUsuario= tk.Button(Ventana_principal, text="Usuario", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonUsuario.pack(pady=20)
-ButtonUsuario.config(command=lambda: abrirUsuarios(Ventana_principal)) 
+ButtonUsuario.config(command=lambda:abrirUsuarios(Ventana_principal)) 
 
 ButtonLibros= tk.Button(Ventana_principal, text="Libros", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonLibros.pack(pady=20)

@@ -1,0 +1,89 @@
+import tkinter as tk
+from tkinter import ttk
+
+def abrirUsuarios(ventanaPrincipal):
+
+    """Opens the users CRUD"""
+
+    #WINDOW SETTINGS
+    ventanaPrincipal.withdraw()
+    ventanaUsuario = tk.Toplevel(bg="#EAE4D5")
+    ventanaUsuario.title("Gestión de Usuarios")
+    ventanaUsuario.protocol("WM_DELETE_WINDOW", lambda: ventanaPrincipal.destroy()) #Closes the main menu window once the user clicks the X button
+    #Toplevel creates a new secondary window different from the main one (TK). There can only be one TK window.
+    ventanaUsuario.state('zoomed')
+    ventanaUsuario.resizable(True, True)
+    ventanaUsuario.rowconfigure(0,weight=1)
+    ventanaUsuario.rowconfigure(1,weight=1)
+    ventanaUsuario.rowconfigure(2,weight=1)
+    ventanaUsuario.rowconfigure(3,weight=1)
+    ventanaUsuario.rowconfigure(4,weight=1)
+    ventanaUsuario.columnconfigure(0,weight=1)
+
+    #WINDOW FRAMES
+
+    frameTituloUsuario = tk.Frame(ventanaUsuario,bg="#EAE4D5")
+    frameTituloUsuario.grid(row=0,column=0)
+
+    frameUsuario = tk.Frame(ventanaUsuario,bg="#EAE4D5")
+    frameUsuario.grid(row=1,column=0,sticky="nsew")
+    frameUsuario.columnconfigure(0,weight=1)
+    frameUsuario.rowconfigure(1,weight=1)
+
+    frameIngresarUsuario = tk.Frame(frameUsuario,bg="#EAE4D5")
+    frameIngresarUsuario.grid(row=1,column=0)
+    
+    frameBotonesUsuario = tk.Frame(frameUsuario,bg="#EAE4D5")
+    frameBotonesUsuario.grid(row=3,column=0,columnspan=3,pady=50)
+
+    frameTituloLibro = tk.Frame(ventanaUsuario,bg="#EAE4D5")
+    frameTituloLibro.grid(row=2,column=0)
+
+    frameLibro = tk.Frame(ventanaUsuario,bg="#EAE4D5")
+    frameLibro.grid(row=3,column=0)
+    frameLibro.rowconfigure(0,weight=1)
+    frameLibro.rowconfigure(1,weight=1)
+    frameLibro.rowconfigure(2,weight=1)
+
+
+    frameBotonesLibro = tk.Frame(frameLibro,bg="#EAE4D5")
+    frameBotonesLibro.grid(row=1,column=1)
+
+    #USER CRUD
+
+    tituloUsuario= tk.Label(frameTituloUsuario, text="USUARIO", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    tituloUsuario.grid(row=0,column=0,sticky="nsew")
+
+    labelIngresarUsuario = tk.Label(frameIngresarUsuario, text="Documento: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarUsuario.grid(row=0,column=0)
+    CampoTextoIngresarUsuario= tk.Entry(frameIngresarUsuario,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoIngresarUsuario.grid(row=0,column=1)
+    CampoImprimirUsuario= tk.Entry(frameIngresarUsuario,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
+    CampoImprimirUsuario.grid(row=0,column=2,padx=20)
+
+    AgregarUsuario= tk.Button(frameBotonesUsuario, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
+
+    ModificarUsuario= tk.Button(frameBotonesUsuario, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
+
+    BuscarUsuario=tk.Button(frameBotonesUsuario, text="Buscar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
+
+    EliminarUsuario = tk.Button(frameBotonesUsuario, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
+
+
+    #BOOK RESERVATION CRUD
+
+    tituloLibro= tk.Label(frameTituloLibro, text="LIBRO", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
+    tituloLibro.grid(row=0,column=1)
+
+    labelIngresarISBN = tk.Label(frameLibro, text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelIngresarISBN.grid(row=0,column=0)
+    CampoTextoIngresarISBN= tk.Entry(frameLibro,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoIngresarISBN.grid(row=0,column=1,sticky="nsew")
+
+    reservarLibro= tk.Button(frameBotonesLibro, text="Prestar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
+
+    retornarLibro = tk.Button(frameBotonesLibro, text="Retornar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
+
+    historialReservas = tk.Button(frameBotonesLibro, text="Historial de reservas", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=1, column=0, columnspan=2, padx=10, pady=20,sticky="nsew")
+
+    volver=tk.Button(frameBotonesLibro, text="VOLVER AL MENÚ", command=lambda: [ventanaUsuario.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=2, column=0, columnspan=2, pady=50)
