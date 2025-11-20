@@ -3,7 +3,7 @@ from tkinter import ttk
 
 def abrirUsuarios(ventanaPrincipal):
 
-    """Opens the users CRUD"""
+    """Opens the User class CRUD"""
 
     #WINDOW SETTINGS
     ventanaPrincipal.withdraw()
