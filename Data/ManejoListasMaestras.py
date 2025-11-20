@@ -1,6 +1,7 @@
 from Classes.Libro import Libro
 from typing import List                 
 from collections import deque
+from DataManagement import *
 """Master Lists of Objects
 The two lists of organized Inventory and General Inventory are defined and filled, also makes the recursive stack and pile calls
 
@@ -30,6 +31,7 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
 
     inventarioGeneral.append(Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera))
 
+
     isbnNuevo =isbn.strip("-")
     insertado=False #Flag Var
 
@@ -41,6 +43,8 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
 
         if not insertado:
             inventarioOrdenado.append(Libro)
+    guardarInventarioGeneral(inventarioGeneral)
+    guardarInventarioOrdenado(inventarioOrdenado)
 
 """Stack and Tail Recursion"""
 
