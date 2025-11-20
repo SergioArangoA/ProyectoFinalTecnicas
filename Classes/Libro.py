@@ -33,7 +33,7 @@ class Libro:
         self.enInventario = enInventario
         self.prestados = prestados
         self.listaEspera= listaEspera if listaEspera is not None else deque()
-        self.estantes = list[str]= []
+        self.estantes: list[str]= []
         #self.atributo = atributo 
         
     def imprimirDatos(self):
