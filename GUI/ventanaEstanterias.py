@@ -1,16 +1,16 @@
 import tkinter as tk
 from tkinter import ttk
 
-#INVENTORY WINDOW
+#STAND WINDOW
 def abrirEstanterias(ventanaPrincipal):
-    """Opens a window, in which you can choose if you want to see both inventories, borrowed books's history and the total price of an author's books and average author's book weight in the inventory"""
+    """Opens a window, which contains the Stand class CRUD."""
 
-    #INVENTORY WINDOW SETTINGS
+    #STAND WINDOW SETTINGS
 
     ventanaPrincipal.withdraw() #Hides the main window when the secondary window is opened
     ventanaEstante = tk.Toplevel(bg="#EAE4D5") #Toplevel creates a new secondary window and bg adds color
     ventanaEstante.protocol("WM_DELETE_WINDOW", lambda: ventanaPrincipal.destroy()) #Closes the main menu window once the user clicks the X button
-    #Toplevel creates a new secondary window different from the main one (TK). There can only be one TK window.
+    
     ventanaEstante.title("Gestión de Estantes")
     ventanaEstante.state('zoomed')
     ventanaEstante.resizable(True, True)
@@ -21,7 +21,7 @@ def abrirEstanterias(ventanaPrincipal):
     ventanaEstante.columnconfigure(0, weight=1)
     ventanaEstante.columnconfigure(1,weight=1)
 
-    #INVENTORY'S WINDOWS FRAMES
+    #STAND'S WINDOWS FRAMES
     frameTitulo = tk.Frame(ventanaEstante,bg="#EAE4D5")
     frameTitulo.grid(row=0,column=0)
 
@@ -31,12 +31,13 @@ def abrirEstanterias(ventanaPrincipal):
     frameLibros =tk.Frame(ventanaEstante, bg = "#EAE4D5")
     frameLibros.grid(row=2,column=0)
 
+    #WINDOW'S TITLE
 
     titulo= tk.Label(frameTitulo, text="ESTANTE", font=("Palatino Linotype", 20, "bold"), bg="#EAE4D5", fg="#213555")
     titulo.grid(row=0,column=0,sticky="nsew")
 
 
-    #AUTHOR'S BOOKS STATISTICS
+    #STAND'S ID CRUD
 
     labelID = tk.Label(frameEstante,text="ID: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
     labelID.grid(row=0,column=0,pady=10)
@@ -53,6 +54,8 @@ def abrirEstanterias(ventanaPrincipal):
     botonListaEstantes = tk.Button(frameEstante,text="Abrir lista de estantes",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonListaEstantes.grid(row=3,column=0,sticky="nsew",padx=10,pady=20,columnspan=2)
 
+
+    #STAND'S CONTAINED BOOKS CRUD
     CampoImpresionID= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
     CampoImpresionID.grid(row=0,column=1,pady=10)
 
