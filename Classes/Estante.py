@@ -1,6 +1,6 @@
-
+from Data.ManejoListasMaestras import inventarioOrdenado
 class Estante:
-    """A Estante instance represents a bookStand in the library.
+    """An Estante instance represents a book shelf in the library.
     
     Atributes:
     id(private str): Stand's id
@@ -22,14 +22,17 @@ class Estante:
 
     diccionarioObjeto(): Transforms dictionary to object
 
-    """
-    def __init__(self, id: str, bookList: list):
+    estanteriaDeficiente():This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together,
+    exceed a "risk" of 8kg"""
+    
+    def __init__(self, id: str, librosEnEstante: list):
         self.__id = id #__id, quiere decir que la variable es privada. Es decir, que no
         #puedes acceder a ella directamente. Esto lo hago, para que al cambiar el nombre
         #del stand, se puedan actualizar de inmediato en los libros del stand el nuevo
         #nombre del stand, así evitaremos errores más adelante
-        self.bookList = bookList
-
+        self.librosEnEstante = librosEnEstante
+        self.libroEnEstante: list[bool]= [] #Ask if the book in that position is on the shelf: if true that book is on the shelf, if false it's loaned out/borrowed
+        
     def obtenerID(self):
         """This method returns the Id attribute"""
         return self.__id 
@@ -40,12 +43,35 @@ class Estante:
 
     def objetoDiccionario(self):
         """Transforms the object to a dictionary"""
-        return({"id": self.obtenerID(), "bookList": self.bookList})
+        return({"id": self.obtenerID(), "librosEnEstante": self.librosEnEstante})
     
-    def diccionarioObjeto(diccionario):
+    @classmethod #It says that the method belongs to the class, not to an existing object.
+    def diccionarioObjeto(clsEstante, diccionarioEstante):
         """Transforms dictionary to object"""
-        return()
+        return clsEstante(diccionarioEstante["id"], diccionarioEstante["librosEnEstante"], diccionarioEstante["libroEnEstante"])
     
-    ###HACER OTRO ATRIBUTO QUE SEA UNA LISTA DE BOOLEANOS QUE DIGA SI EL LIBRO EN ESA POSICION ESTA EN EL ESTANTE SI ES TRUE ESE LIBRO ESTA EN 
-    #EL ESTANTE SI ES FALSE ESTA PRESTADO
+"""Shelf Module"""
+
+"""1. Brute force"""
+
+def estanteriaDeficiente(inventarioOrdenado):
+    """This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg"""
+    listaLibrosEstanteriaDeficiente=[]
+    #
+    for Libro1 in inventarioOrdenado:
+        for Libro2 in inventarioOrdenado:
+            for Libro3 in inventarioOrdenado:
+                for Libro4 in inventarioOrdenado:
+                    if Libro1.enInventario>0 and Libro2.enInventario>0 and Libro3.enInventario>0 and Libro4.enInventario>0:
+
+                        if Libro1.peso+Libro2.peso+Libro3.peso+Libro4>8:
+                            listaLibrosEstanteriaDeficiente.append([Libro1,Libro2,Libro3,Libro4])      
+                                                 
+    if len(listaLibrosEstanteriaDeficiente) == 0:
+        return "No hay suficientes libros" ################
+    return listaLibrosEstanteriaDeficiente
+
+
+
+  
         
