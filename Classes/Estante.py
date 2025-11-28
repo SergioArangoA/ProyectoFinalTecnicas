@@ -45,7 +45,7 @@ class Estante:
         """Transforms the object to a dictionary"""
         return({"id": self.obtenerID(), "librosEnEstante": self.librosEnEstante})
     
-    @classmethod #It says that the method belongs to the class, not to an existing object.
+    @classmethod #The method belongs to the class, not to an existing object.
     def diccionarioObjeto(clsEstante, diccionarioEstante):
         """Transforms dictionary to object"""
         return clsEstante(diccionarioEstante["id"], diccionarioEstante["librosEnEstante"], diccionarioEstante["libroEnEstante"])
@@ -57,19 +57,23 @@ class Estante:
 def estanteriaDeficiente(inventarioOrdenado):
     """This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg"""
     listaLibrosEstanteriaDeficiente=[]
-    #
-    for Libro1 in inventarioOrdenado:
+    #This list stores all the 4 books combinations that exceeds the 8kg risk
+    
+    for Libro1 in inventarioOrdenado: #A For for each book in the shelf (4)
         for Libro2 in inventarioOrdenado:
             for Libro3 in inventarioOrdenado:
                 for Libro4 in inventarioOrdenado:
                     if Libro1.enInventario>0 and Libro2.enInventario>0 and Libro3.enInventario>0 and Libro4.enInventario>0:
-
+                        #Verifies that the four books are available in the inventory
+                        
                         if Libro1.peso+Libro2.peso+Libro3.peso+Libro4>8:
+                            #If sum of the weights is above eight the books are added as a list in 'listaLibrosEstanteriaDeficiente'
+
                             listaLibrosEstanteriaDeficiente.append([Libro1,Libro2,Libro3,Libro4])      
                                                  
-    if len(listaLibrosEstanteriaDeficiente) == 0:
-        return "No hay suficientes libros" ################
-    return listaLibrosEstanteriaDeficiente
+    if len(listaLibrosEstanteriaDeficiente) == 0: #If the cycles are done and the final lenght of store list is zero it means that there are'nt enough books 
+        return "No hay suficientes libros" #This messaje shows on the open window 'ventanaEstanterias'
+    return listaLibrosEstanteriaDeficiente #Returns the final list
 
 
 

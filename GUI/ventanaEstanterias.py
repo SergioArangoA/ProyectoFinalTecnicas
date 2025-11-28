@@ -103,13 +103,3 @@ def abrirEstanterias(ventanaPrincipal):
     botonOrdenarDeficiente.grid(row=6,column=3,padx=10,pady=20, columnspan=2)
 
     volver=tk.Button(ventanaEstante, text="VOLVER AL MENÚ", command=lambda: [ventanaEstante.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=3, column=0, padx=10, pady=20)
-
-
-
-
-
-
-
-
-
-
