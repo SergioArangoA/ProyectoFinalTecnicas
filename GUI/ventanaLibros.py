@@ -1,10 +1,42 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+import os
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+# IMPORTS ABSOLUTOS (estos nunca fallan)
+from Data.ManejoListasMaestras import guardarLibro
+
 
 
 #BOOKS'S CRUD WINDOW
 def abrirLibros(ventanaPrincipal):
     """Opens the Book class CRUD"""
+
+
+    #METHODS
+    def agregarLibro():
+        isbn = CampoTextoISBN.get()
+        titulo = CampoTextoTitulo.get()
+        autor = CampoTextoAutor.get()
+        peso = float(CampoTextoPeso.get())
+        precio = int(CampoTextoPrecio.get())
+
+        guardarLibro(isbn,titulo,autor,peso,precio,1,0,[],None)
+
+        ventanaError("ERROR FATAL, MÁTATE,\n INGRESA LOS DATOS PUTO")
+
+    def ventanaError(mensaje: str):
+        ventana = tk.Toplevel(bg= "#EAE4D5")
+        ventana.title("ERROR")
+        labelError = tk.Label(ventana, text=mensaje,font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
+        labelError.pack()
+
+
+    #WINDOW
 
     #CRUD WINDOW SETTINGS
     ventanaPrincipal.withdraw() #Hides the principal window
@@ -118,7 +150,7 @@ def abrirLibros(ventanaPrincipal):
     
     #CRUD BUTTONS
 
-    AgregarLibro= tk.Button(frameBotones, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
+    AgregarLibro= tk.Button(frameBotones,command=agregarLibro, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
 
     ModificarLibro= tk.Button(frameBotones, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
 
@@ -128,3 +160,5 @@ def abrirLibros(ventanaPrincipal):
 
     #RETURN BUTTON
     volver=tk.Button(frameBotones, text="VOLVER AL MENÚ", command=lambda: [ventanaLibros.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=1, column=0, padx=10, pady=20)
+
+

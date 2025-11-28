@@ -1,7 +1,20 @@
-from Classes.Libro import Libro
 from typing import List                 
 from collections import deque
-from DataManagement import *
+import tkinter as tk
+import sys
+import os
+
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+# IMPORTS ABSOLUTOS (estos nunca fallan)
+from Data.DataManagement import guardarInventarioGeneral
+from Data.DataManagement import guardarInventarioOrdenado
+from Classes.Libro import Libro
+
+
 """Master Lists of Objects
 The two lists of organized Inventory and General Inventory are defined and filled, also makes the recursive stack and pile calls
 
@@ -29,21 +42,30 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
     after being created"""
 
-    inventarioGeneral.append(Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera))
     isbnNuevo =isbn.strip("-")
-    insertado=False #Flag Var
 
-    for i in range(len(inventarioOrdenado)):
-        isbnExistente= inventarioOrdenado[i].isbn.strip("-")
+    for libro in inventarioGeneral: #Goes throught the general inventory
+        if libro.isbn.strip("-")==isbnNuevo: #checks if the book is already in the inventory to not save it again
+            return
+        
+    nuevoLibro = Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
+    #Creates a Book object with all the attributes and adds it to the general inventory
 
-        if isbnNuevo<isbnExistente:
-            inventarioOrdenado.insert(i,Libro)
+    inventarioGeneral.append(nuevoLibro)
+    insertado=False #Flag Var to know if the book has been already added to the Organized Inventory
 
-        if not insertado:
-            inventarioOrdenado.append(Libro)
-    guardarInventarioGeneral(inventarioGeneral)
+    for i in range(len(inventarioOrdenado)):#goes throught the organized inventory to fill it 
+        libro = inventarioOrdenado[i] 
+        if isbnNuevo < libro.isbn.strip("-"):#This action is the one that allows the books to be organized
+            inventarioOrdenado.insert(i, nuevoLibro)#this inserts the book in the correct position
+            insertado = True #the book has been inserted
+            break
+
+    if not insertado: #if the book doesnt match the comparision its gonna be add to the end of the list beacuse is greater than the others
+        inventarioOrdenado.append(nuevoLibro)
+
+    guardarInventarioGeneral(inventarioGeneral) #Saves the list
     guardarInventarioOrdenado(inventarioOrdenado)
-
 """Stack and Tail Recursion"""
 
 """Stack"""

@@ -1,5 +1,29 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+import os
+import tkinter as tk
+import sys
+import os
+
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+# IMPORTS ABSOLUTOS (estos nunca fallan)
+from Data import *
+from Classes import *
+from GUI import *
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+# IMPORTS ABSOLUTOS (estos nunca fallan)
+from Data import *
+from Classes import *
+from GUI import *
 
 #STAND WINDOW
 def abrirEstanterias(ventanaPrincipal):

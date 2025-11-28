@@ -1,5 +1,17 @@
+import tkinter as tk
+import sys
+import os
+
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+# IMPORTS ABSOLUTOS (estos nunca fallan)
+from Data import *
+from Classes.Usuario import Usuario
+from GUI import *
 from collections import deque
-from Usuario import Usuario
 class Libro:
     """A Libro instance represents a book in the library.
 
@@ -25,7 +37,7 @@ class Libro:
     #ListaEspera es el nombre del parámetro. Puede ser de tipo deque o None (esa barra | se lee como “o”).
     #El valor por defecto es None. Es decir: si no pasas nada al crear el objeto, ListaEspera será None.
     
-    def __init__(self, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, listaEspera: deque | None = None):
+    def __init__(self, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, estantes: list[str],listaEspera: deque | None = None):
         #con __innit_ definimos los atributos con los que se creara una instancia de la clase. Se especifícan todos los atributos que se importaran
         self.isbn = isbn
         self.titulo = titulo
