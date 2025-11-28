@@ -1,8 +1,14 @@
 import tkinter as tk
-from ventanaInventario import *
-from ventanaEstanterias import*
-from ventanaUsuarios import *
-from ventanaLibros import*
+import sys
+import os
+
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+from GUI import *
+# IMPORTS ABSOLUTOS (estos nunca fallan)
 #Imports functions for the secondary windows from the file botonesSecundarios.py
 """Importa las funciones de las ventanas secundarias desde el archivo botonesSecundarios.py"""
 

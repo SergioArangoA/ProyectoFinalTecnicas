@@ -1,18 +1,26 @@
+import tkinter as tk
+import sys
+import os
 from Classes.Libro import Libro
-from Classes.Estante import Estante
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+# IMPORTS ABSOLUTOS (estos nunca fallan)
 import json
 
 #HAY QUE CREAR LAS VARIABLES DE COLOR DUDOSO
-def guardarInventarioGeneral(InventarioGeneral):
+def guardarInventarioGeneral(InventarioGeneral: list[Libro]):
     """Saves the general inventory in a JSON"""
     with open ("InventarioGeneral.json", "w",encoding = "utf-8") as archivo:
-        diccionarioLibros = [libro.__dict__ for libro in InventarioGeneral] #convirtiendo las instancias de libro en lista de diccionarios
+        diccionarioLibros = [libro.libroADict() for libro in InventarioGeneral] #convirtiendo las instancias de libro en lista de diccionarios
         json.dump(diccionarioLibros,archivo, ensure_ascii=False, indent = 4) #guardando la lista de diccionarios
 
-def guardarInventarioOrdenado(InventarioGeneral):
+def guardarInventarioOrdenado(InventarioGeneral: list[Libro]):
     """Saves the ordered inventory in a JSON"""
-    with open ("InventarioGeneral.json", "w",encoding = "utf-8") as archivo:
-        diccionarioLibros = [libro.__dict__ for libro in InventarioGeneral]
+    with open ("InventarioOrdenado.json", "w",encoding = "utf-8") as archivo:
+        diccionarioLibros = [libro.libroADict() for libro in InventarioGeneral]
         json.dump(diccionarioLibros, archivo, ensure_ascii=False, indent=4)
 
 def cargarInventarioGeneral():
