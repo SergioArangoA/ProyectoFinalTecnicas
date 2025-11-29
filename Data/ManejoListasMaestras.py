@@ -41,22 +41,28 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
     after being created"""
-    nuevoLibro = Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
-    inventarioGeneral.append(nuevoLibro)
-    #Creates a Book object with all the attributes and adds it to the general inventory
 
     isbnNuevo =isbn.strip("-")
+
+    for libro in inventarioGeneral: #Goes throught the general inventory
+        if libro.isbn.strip("-")==isbnNuevo: #checks if the book is already in the inventory to not save it again
+            return
+        
+    nuevoLibro = Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
+    #Creates a Book object with all the attributes and adds it to the general inventory
+
+    inventarioGeneral.append(nuevoLibro)
     insertado=False #Flag Var to know if the book has been already added to the Organized Inventory
 
-    for i in range(len(inventarioOrdenado)): #Goes throught the organized inventory
-        isbnExistente= inventarioOrdenado[i].isbn.strip("-") #Extracts de ISBN of the actual Book without hyphens
+    for i in range(len(inventarioOrdenado)):#goes throught the organized inventory to fill it 
+        libro = inventarioOrdenado[i] 
+        if isbnNuevo < libro.isbn.strip("-"):#This action is the one that allows the books to be organized
+            inventarioOrdenado.insert(i, nuevoLibro)#this inserts the book in the correct position
+            insertado = True #the book has been inserted
+            break
 
-        if isbnNuevo<isbnExistente: #Compares the ISBN and if the new is less than the older its going to insert the new book on that position
-            inventarioOrdenado.insert(i,nuevoLibro)
-            insertado = True
-
-        if not insertado: #if the book doesnt match the comparision its gonna be add to the end of the list beacuse is greater than the others
-            inventarioOrdenado.append(nuevoLibro)
+    if not insertado: #if the book doesnt match the comparision its gonna be add to the end of the list beacuse is greater than the others
+        inventarioOrdenado.append(nuevoLibro)
 
     guardarInventarioGeneral(inventarioGeneral) #Saves the list
     guardarInventarioOrdenado(inventarioOrdenado)
