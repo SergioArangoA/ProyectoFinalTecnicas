@@ -35,14 +35,22 @@ calculoPesoPromedio():This method is the recursive technique, calculates the ave
 inventarioGeneral=[]
 inventarioOrdenado=[] 
 
+def normalizar(cadena):
+    """This method helps later to compare strings without Upper case, comma, hyphen and dot"""
+    cadena = cadena.lower()            #Convert to lower case
+    cadena = cadena.replace(" ", "")   #Remove Space
+    cadena = cadena.replace("-", "")   #Remove Hyphen 
+    cadena = cadena.replace(".", "")   #Remove dot
+    return cadena
+
 """List Filling"""
 #CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
-def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
-    estantes: List[str], listaEspera: deque | None = None, cantidad): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
+def guardarLibro (cantidad, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
+    estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added to the organized inventory and the general inventory
     after being created, if the book exists """
-
     isbnNuevo =isbn.strip("-")
+    
 
     for libro in inventarioGeneral: #Goes throught the general inventory
         if libro.isbn.strip("-")== isbnNuevo and cantidad>0: #checks if the book is already in the inventory if it is, ask how many of the same book are gonna be added
@@ -106,13 +114,13 @@ def valorTotalAutor(listaLibros: List[Libro], autor: str, inventarioOrdenado):
 
 """Tail"""
 
-def pesoPromedioAutor(autor: str, inventarioOrdenado):
+def pesoPromedioAutor(autor: str, inventarioOrdenado, normalizar):
     """ This function acts as a wrapper for the internal recursive function 'calculoPesoPromedio()',
 initializing the necessary parameters, variables and starting the exploration from the first item in the inventory"""
     n=0
     pesoPromedio=0
     contador=0
-    def calculoPesoPromedio(n:int, contador:int, pesoPromedio: float):
+    def calculoPesoPromedio(n:int, contador:int, pesoPromedio: float, normalizar):
         """This method is the recursive technique, calculates the average weight of a collection of books from a specific author"""
 
         if n==len(inventarioOrdenado):
@@ -126,15 +134,18 @@ initializing the necessary parameters, variables and starting the exploration fr
         LibroActual = inventarioOrdenado[n] 
         #This extracts from the object (in this case named as 'LibroActual') the actual book 
 
-        if LibroActual.autor==autor:
+        if normalizar(LibroActual.autor)==normalizar(autor):
         #It compares the Actual Book Author (.autor) and the author that the user is looking for. If its found adds to the counter one and adds
         # to the weight sum. Returns the recursive call adding to the index 'n' one continuing the recursion
             contador+=1
             pesoPromedio+=LibroActual.peso
-
-        return calculoPesoPromedio(n+1, contador, pesoPromedio)
+            print("Indice(n)= "+ str(n)+"\n"+ "Contador= "+ str(contador)+"\n"+ "Suma Actual Peso promedio= "+ str(pesoPromedio))
+        return calculoPesoPromedio(n+1, contador, pesoPromedio, normalizar)
                                    
-    return calculoPesoPromedio(n, contador, pesoPromedio)
+    return calculoPesoPromedio(n, contador, pesoPromedio, normalizar)
+
+peso = pesoPromedioAutor(autor, inventarioOrdenado, normalizar)
+print("\n")
+print("Peso Promedio = " + str(peso))
     #This allows that the response from 'calculoPesoPromedio' is working on the general code and can be called, else it won't work
     #because the wrapper function is not returning anything
-
