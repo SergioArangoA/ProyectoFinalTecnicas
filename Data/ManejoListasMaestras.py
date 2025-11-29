@@ -19,8 +19,8 @@ from Classes.Libro import Libro
 The two lists of organized Inventory and General Inventory are defined and filled, also makes the recursive stack and pile calls
 
 Methods:
-guardarLibro():Calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory in
-ascending order and the general inventory after being created
+guardarLibro():This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added to the organized inventory and the general inventory
+    after being created, if the book exists
 
 valorTotalAutor(): This function acts as a wrapper for the internal recursive function 'valorTotalMetodo()',
 initializing the necessary parameters and starting the exploration from the first item in the inventory
@@ -36,22 +36,31 @@ inventarioGeneral=[]
 inventarioOrdenado=[] 
 
 """List Filling"""
-
+#CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
 def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
-    estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
-    """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
-    after being created"""
+    estantes: List[str], listaEspera: deque | None = None, cantidad): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
+    """This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added to the organized inventory and the general inventory
+    after being created, if the book exists """
 
     isbnNuevo =isbn.strip("-")
 
     for libro in inventarioGeneral: #Goes throught the general inventory
-        if libro.isbn.strip("-")==isbnNuevo: #checks if the book is already in the inventory to not save it again
-            return
+        if libro.isbn.strip("-")== isbnNuevo and cantidad>0: #checks if the book is already in the inventory if it is, ask how many of the same book are gonna be added
+            libro.enInventario+= cantidad #If the book exists it just going to update the amount of books
+            guardarInventarioGeneral(inventarioGeneral)
+            guardarInventarioOrdenado(inventarioOrdenado)
+            return True #Returns true so the frontend can show the message that the book already exist and has been updated 
         
-    nuevoLibro = Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
-    #Creates a Book object with all the attributes and adds it to the general inventory
-
+        elif  cantidad<0:
+            return False #Returns False so the frontend can show a message that the amount entered is not valid
+        
+    #If the book doesn't exists, creates a new instance, Creates a Book object with all the attributes and adds it to the general inventory
+    nuevoLibro= Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
     inventarioGeneral.append(nuevoLibro)
+
+
+    nuevoLibro.enInventario= cantidad #Initialize the correct amount of books that the user entered
+
     insertado=False #Flag Var to know if the book has been already added to the Organized Inventory
 
     for i in range(len(inventarioOrdenado)):#goes throught the organized inventory to fill it 
@@ -66,6 +75,7 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
 
     guardarInventarioGeneral(inventarioGeneral) #Saves the list
     guardarInventarioOrdenado(inventarioOrdenado)
+
 """Stack and Tail Recursion"""
 
 """Stack"""
@@ -95,8 +105,6 @@ def valorTotalAutor(listaLibros: List[Libro], autor: str, inventarioOrdenado):
     #Start the recursion from the first book, index 0
 
 """Tail"""
-""""2. Recursión de Cola: Implementar una función recursiva que calcule el Peso Promedio de la colección de un autor, demostrando la lógica de la recursión de cola por consola.
-"""
 
 def pesoPromedioAutor(autor: str, inventarioOrdenado):
     """ This function acts as a wrapper for the internal recursive function 'calculoPesoPromedio()',
