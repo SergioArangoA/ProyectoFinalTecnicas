@@ -12,6 +12,8 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data.DataManagement import guardarInventarioGeneral
 from Data.DataManagement import guardarInventarioOrdenado
+from Data.DataManagement import cargarInventarioGeneral
+from Data.DataManagement import cargarInventarioOrdenado
 from Classes.Libro import Libro
 
 
@@ -32,8 +34,6 @@ initializing the necessary parameters, variables and starting the exploration fr
 
 calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
 """
-inventarioGeneral=[]
-inventarioOrdenado=[] 
 
 """List Filling"""
 
@@ -41,10 +41,12 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
     after being created"""
+    inventarioGeneral = cargarInventarioGeneral()
+    inventarioOrdenado = cargarInventarioOrdenado()
 
     isbnNuevo =isbn.strip("-")
 
-    for libro in inventarioGeneral: #Goes throught the general inventory
+    for libro in inventarioGeneral: #Goes through the general inventory
         if libro.isbn.strip("-")==isbnNuevo: #checks if the book is already in the inventory to not save it again
             return
         
