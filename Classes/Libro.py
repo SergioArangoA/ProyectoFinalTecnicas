@@ -10,7 +10,6 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
 from Classes.Usuario import Usuario
-from GUI import *
 from collections import deque
 class Libro:
     """A Libro instance represents a book in the library.
@@ -62,7 +61,7 @@ class Libro:
         """This method converts an object book into a dictionary so it can be saved in JSON"""
         #listaEspera is converted from a deque to a  list for the JSON
 
-        return ({"ISBN":self.isbn,"titulo": self.titulo,"autor": self.autor, "peso": self.peso,"precio": self.precio,
+        return ({"isbn":self.isbn,"titulo": self.titulo,"autor": self.autor, "peso": self.peso,"precio": self.precio,
                 "enInventario": self.enInventario, "prestados": self.prestados, "listaEspera": list(self.listaEspera), 
                 "estantes": self.estantes
             })

@@ -19,21 +19,54 @@ def abrirLibros(ventanaPrincipal):
 
     #METHODS
     def agregarLibro():
+        """Reads the data in the textboxes to add a book. Also opens a new window that will ask the user the amount of books they want to add"""
         isbn = CampoTextoISBN.get()
         titulo = CampoTextoTitulo.get()
         autor = CampoTextoAutor.get()
         peso = float(CampoTextoPeso.get())
         precio = int(CampoTextoPrecio.get())
+        cantidad = ventanaCantidadLibros(True) #Opens a new window that will ask the amount they want to add
+        while cantidad < 0:
+            ventanaError("La cantidad no puede ser un número negativo")
+            cantidad = ventanaCantidadLibros(True)
+        if cantidad > 0:
+            guardarLibro(isbn,titulo,autor,peso,precio,cantidad,0,[],None)
+        else:
+            ventanaError("No se agregó ningún libro porque la cantidad ingresada fue 0")
 
-        guardarLibro(isbn,titulo,autor,peso,precio,1,0,[],None)
-
-        ventanaError("ERROR FATAL, MÁTATE,\n INGRESA LOS DATOS PUTO")
 
     def ventanaError(mensaje: str):
+        """A pop up window that will print the message sent"""
         ventana = tk.Toplevel(bg= "#EAE4D5")
         ventana.title("ERROR")
         labelError = tk.Label(ventana, text=mensaje,font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
         labelError.pack()
+    
+    def ventanaCantidadLibros(resultado: bool):
+        """A window that will ask the amount of books that the user will either want to add or remove. Will return the amount inserted by the user"""
+        ventana = tk.Toplevel()
+        ventana.title("Cantidad de libros")
+        ventana.geometry("350x150")
+        ventana.grab_set()  #Makes the user only able to interact with this window until it closes
+
+        tk.Label(ventana, text="Cantidad:").pack(pady=10)
+
+        campo = tk.Entry(ventana)
+        campo.pack()
+        resultado = {"valor":0} # The amount must be saved in a dictionary because they are mutable
+
+        def confirmar():
+            try:
+                resultado["valor"] = int(campo.get())
+                ventana.destroy()
+            except ValueError:
+                ventanaError("Por favor ingrese un valor válido")
+                ventana.destroy()
+
+        tk.Button(ventana, text="OK", command=confirmar).pack(pady=10)
+        ventana.wait_window() #The program stops running until the window is closed
+        return resultado["valor"]
+
 
 
     #WINDOW

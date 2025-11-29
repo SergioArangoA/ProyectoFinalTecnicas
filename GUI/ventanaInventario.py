@@ -1,9 +1,57 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+import os
+# Agregar la carpeta raíz del proyecto al PYTHONPATH
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+
+from Classes.Libro import Libro
+from Data.DataManagement import cargarInventarioGeneral
+from Data.DataManagement import cargarInventarioOrdenado
+from Data.ManejoListasMaestras import valorTotalAutor
+from Data.ManejoListasMaestras import pesoPromedioAutor
 
 #INVENTORY WINDOW
 def abrirInventario(ventanaPrincipal):
     """Opens a window, in which you can choose if you want to see both inventories, borrowed books's history and the total price of an author's books and average author's book weight in the inventory"""
+    def abrirTablaInventario(inventario: list[Libro],tipoInventario: str):
+        """Opens a new window that contains the data of the books saved in the inventory that the user chooses"""
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title(tipoInventario)
+
+        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PESO','PRECIO','EN INVENTARIO','PRESTADOS'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ISBN',text='ISBN')
+        tabla.heading('TITULO',text='TÍTULO')
+        tabla.heading('AUTOR',text='AUTOR')
+        tabla.heading('PESO',text='PESO(Kg)')
+        tabla.heading('PRECIO',text='PRECIO')
+        tabla.heading('EN INVENTARIO',text='EN INVENTARIO')
+        tabla.heading('PRESTADOS',text = 'PRESTADOS') #The text that will be shown on each heading
+        tabla.pack()
+
+        for libro in inventario:
+            tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
+                                                    libro.titulo,
+                                                    libro.autor,
+                                                    str(libro.peso),
+                                                    str(libro.precio),
+                                                    str(libro.enInventario),
+                                                    str(libro.prestados))) #Each one of the book parameters that will be shown in the table
+        
+    def buscarPesoYValor():
+        """Reads the author name textbox, then searchs the average weight and total price of their books in the inventory."""
+        InventarioOrdenado = cargarInventarioOrdenado()
+        nombre = str(CampoTextoAutor.get())
+        CampoValorTotal.config(state="normal")#This will allow to write the values in the textbox
+        CampoPeso.config(state="normal")
+        CampoPeso.delete(0, tk.END)
+        CampoValorTotal.delete(0,tk.END) #Delete the previous data in the textbox
+        CampoValorTotal.insert(0,str(valorTotalAutor(nombre,InventarioOrdenado)))
+        CampoPeso.insert(0,str(pesoPromedioAutor(nombre,InventarioOrdenado)))
+        CampoValorTotal.config(state="disabled")#Then will block them again
+        CampoPeso.config(state="disabled")
 
     #INVENTORY WINDOW SETTINGS
 
@@ -42,10 +90,10 @@ def abrirInventario(ventanaPrincipal):
 
     #Secondary Buttons inside
 
-    InventarioGeneral= tk.Button(frameBotones, text="Inventario general", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    InventarioGeneral= tk.Button(frameBotones, text="Inventario general",command=lambda: abrirTablaInventario(cargarInventarioGeneral(),"Inventario general"), width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
     InventarioGeneral.grid(row=0,column=0,sticky="nsew",padx=20)
 
-    InventarioOrdenado= tk.Button(frameBotones, text="Inventario ordenado", width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
+    InventarioOrdenado= tk.Button(frameBotones, text="Inventario ordenado",command=lambda: abrirTablaInventario(cargarInventarioOrdenado(),"Inventario ordenado"), width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
     InventarioOrdenado.grid(row=0,column=1,sticky="nsew",padx=20)
 
     historialPrestamos = tk.Button(frameBotones,text="Historal de préstamos",width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
@@ -60,7 +108,7 @@ def abrirInventario(ventanaPrincipal):
     labelAutor.grid(row=1,column=0)
     CampoTextoAutor= tk.Entry(frameEstadisticas,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
     CampoTextoAutor.grid(row=1,column=1)
-    botonBuscar = tk.Button(frameEstadisticas,text="Buscar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonBuscar = tk.Button(frameEstadisticas,text="Buscar",command= lambda: buscarPesoYValor(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonBuscar.grid(row=1,column=2,sticky="nsew")
 
     labelPeso = tk.Label(frameEstadisticas,text="Peso promedio(kg): ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")

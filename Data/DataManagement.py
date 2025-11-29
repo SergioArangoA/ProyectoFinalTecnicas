@@ -1,7 +1,6 @@
 import tkinter as tk
 import sys
 import os
-from Classes.Libro import Libro
 # Agregar la carpeta raíz del proyecto al PYTHONPATH
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
@@ -9,6 +8,7 @@ if ROOT not in sys.path:
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 import json
+from Classes.Libro import Libro
 
 #HAY QUE CREAR LAS VARIABLES DE COLOR DUDOSO
 def guardarInventarioGeneral(InventarioGeneral: list[Libro]):

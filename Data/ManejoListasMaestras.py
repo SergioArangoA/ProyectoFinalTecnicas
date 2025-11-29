@@ -12,6 +12,8 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data.DataManagement import guardarInventarioGeneral
 from Data.DataManagement import guardarInventarioOrdenado
+from Data.DataManagement import cargarInventarioGeneral
+from Data.DataManagement import cargarInventarioOrdenado
 from Classes.Libro import Libro
 
 
@@ -32,9 +34,8 @@ initializing the necessary parameters, variables and starting the exploration fr
 
 calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
 """
-inventarioGeneral=[]
-inventarioOrdenado=[] 
-
+inventarioOrdenado=cargarInventarioOrdenado
+inventarioGeneral=cargarInventarioGeneral
 def normalizar(cadena):
     """This method helps later to compare strings without Upper case, comma, hyphen and dot"""
     cadena = cadena.lower()            #Convert to lower case
@@ -47,8 +48,11 @@ def normalizar(cadena):
 #CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
 def guardarLibro (cantidad, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
-    """This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added to the organized inventory and the general inventory
-    after being created, if the book exists """
+    """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
+    after being created"""
+    inventarioGeneral = cargarInventarioGeneral()
+    inventarioOrdenado = cargarInventarioOrdenado()
+
     isbnNuevo =isbn.strip("-")
     
 
@@ -89,7 +93,7 @@ def guardarLibro (cantidad, isbn: str, titulo: str, autor: str, peso: float, pre
 """Stack"""
     #LA VARIABLE AUTOR VIENE DEL FRONTEND Y ES LA QUE DICE QUE AUTOR SE VA A BUSCAR
 
-def valorTotalAutor(listaLibros: List[Libro], autor: str, inventarioOrdenado):
+def valorTotalAutor(autor: str, inventarioOrdenado):
     """This function acts as a wrapper for the internal recursive function, initializing the necessary parameters and starting the exploration from the first item in the inventory"""
     
     def valorTotalMetodo(n):
@@ -117,6 +121,7 @@ def valorTotalAutor(listaLibros: List[Libro], autor: str, inventarioOrdenado):
 def pesoPromedioAutor(autor: str, inventarioOrdenado, normalizar):
     """ This function acts as a wrapper for the internal recursive function 'calculoPesoPromedio()',
 initializing the necessary parameters, variables and starting the exploration from the first item in the inventory"""
+
     n=0
     pesoPromedio=0
     contador=0
