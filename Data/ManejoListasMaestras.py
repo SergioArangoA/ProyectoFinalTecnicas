@@ -21,8 +21,8 @@ from Classes.Libro import Libro
 The two lists of organized Inventory and General Inventory are defined and filled, also makes the recursive stack and pile calls
 
 Methods:
-guardarLibro():Calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory in
-ascending order and the general inventory after being created
+guardarLibro():This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added to the organized inventory and the general inventory
+    after being created, if the book exists
 
 valorTotalAutor(): This function acts as a wrapper for the internal recursive function 'valorTotalMetodo()',
 initializing the necessary parameters and starting the exploration from the first item in the inventory
@@ -34,10 +34,19 @@ initializing the necessary parameters, variables and starting the exploration fr
 
 calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
 """
+inventarioOrdenado=cargarInventarioOrdenado
+inventarioGeneral=cargarInventarioGeneral
+def normalizar(cadena):
+    """This method helps later to compare strings without Upper case, comma, hyphen and dot"""
+    cadena = cadena.lower()            #Convert to lower case
+    cadena = cadena.replace(" ", "")   #Remove Space
+    cadena = cadena.replace("-", "")   #Remove Hyphen 
+    cadena = cadena.replace(".", "")   #Remove dot
+    return cadena
 
 """List Filling"""
-
-def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
+#CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
+def guardarLibro (cantidad, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
     after being created"""
@@ -45,15 +54,25 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
     inventarioOrdenado = cargarInventarioOrdenado()
 
     isbnNuevo =isbn.strip("-")
+    
 
-    for libro in inventarioGeneral: #Goes through the general inventory
-        if libro.isbn.strip("-")==isbnNuevo: #checks if the book is already in the inventory to not save it again
-            return
+    for libro in inventarioGeneral: #Goes throught the general inventory
+        if libro.isbn.strip("-")== isbnNuevo and cantidad>0: #checks if the book is already in the inventory if it is, ask how many of the same book are gonna be added
+            libro.enInventario+= cantidad #If the book exists it just going to update the amount of books
+            guardarInventarioGeneral(inventarioGeneral)
+            guardarInventarioOrdenado(inventarioOrdenado)
+            return True #Returns true so the frontend can show the message that the book already exist and has been updated 
         
-    nuevoLibro = Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
-    #Creates a Book object with all the attributes and adds it to the general inventory
-
+        elif  cantidad<0:
+            return False #Returns False so the frontend can show a message that the amount entered is not valid
+        
+    #If the book doesn't exists, creates a new instance, Creates a Book object with all the attributes and adds it to the general inventory
+    nuevoLibro= Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
     inventarioGeneral.append(nuevoLibro)
+
+
+    nuevoLibro.enInventario= cantidad #Initialize the correct amount of books that the user entered
+
     insertado=False #Flag Var to know if the book has been already added to the Organized Inventory
 
     for i in range(len(inventarioOrdenado)):#goes throught the organized inventory to fill it 
@@ -68,6 +87,7 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
 
     guardarInventarioGeneral(inventarioGeneral) #Saves the list
     guardarInventarioOrdenado(inventarioOrdenado)
+
 """Stack and Tail Recursion"""
 
 """Stack"""
@@ -97,16 +117,15 @@ def valorTotalAutor(autor: str, inventarioOrdenado):
     #Start the recursion from the first book, index 0
 
 """Tail"""
-""""2. Recursión de Cola: Implementar una función recursiva que calcule el Peso Promedio de la colección de un autor, demostrando la lógica de la recursión de cola por consola.
-"""
 
-def pesoPromedioAutor(autor: str, inventarioOrdenado):
+def pesoPromedioAutor(autor: str, inventarioOrdenado, normalizar):
     """ This function acts as a wrapper for the internal recursive function 'calculoPesoPromedio()',
 initializing the necessary parameters, variables and starting the exploration from the first item in the inventory"""
+
     n=0
     pesoPromedio=0
     contador=0
-    def calculoPesoPromedio(n:int, contador:int, pesoPromedio: float):
+    def calculoPesoPromedio(n:int, contador:int, pesoPromedio: float, normalizar):
         """This method is the recursive technique, calculates the average weight of a collection of books from a specific author"""
 
         if n==len(inventarioOrdenado):
@@ -120,15 +139,18 @@ initializing the necessary parameters, variables and starting the exploration fr
         LibroActual = inventarioOrdenado[n] 
         #This extracts from the object (in this case named as 'LibroActual') the actual book 
 
-        if LibroActual.autor==autor:
+        if normalizar(LibroActual.autor)==normalizar(autor):
         #It compares the Actual Book Author (.autor) and the author that the user is looking for. If its found adds to the counter one and adds
         # to the weight sum. Returns the recursive call adding to the index 'n' one continuing the recursion
             contador+=1
             pesoPromedio+=LibroActual.peso
-
-        return calculoPesoPromedio(n+1, contador, pesoPromedio)
+            print("Indice(n)= "+ str(n)+"\n"+ "Contador= "+ str(contador)+"\n"+ "Suma Actual Peso promedio= "+ str(pesoPromedio))
+        return calculoPesoPromedio(n+1, contador, pesoPromedio, normalizar)
                                    
-    return calculoPesoPromedio(n, contador, pesoPromedio)
+    return calculoPesoPromedio(n, contador, pesoPromedio, normalizar)
+
+peso = pesoPromedioAutor(autor, inventarioOrdenado, normalizar)
+print("\n")
+print("Peso Promedio = " + str(peso))
     #This allows that the response from 'calculoPesoPromedio' is working on the general code and can be called, else it won't work
     #because the wrapper function is not returning anything
-
