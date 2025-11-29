@@ -13,7 +13,7 @@ if ROOT not in sys.path:
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
-from Classes import *
+from Classes.Estante import Estante
 from GUI import *
 # Agregar la carpeta raíz del proyecto al PYTHONPATH
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
