@@ -71,7 +71,7 @@ def guardarLibro (isbn: str, titulo: str, autor: str, peso: float, precio: int, 
 """Stack"""
     #LA VARIABLE AUTOR VIENE DEL FRONTEND Y ES LA QUE DICE QUE AUTOR SE VA A BUSCAR
 
-def valorTotalAutor(listaLibros: List[Libro], autor: str, inventarioOrdenado):
+def valorTotalAutor(autor: str, inventarioOrdenado):
     """This function acts as a wrapper for the internal recursive function, initializing the necessary parameters and starting the exploration from the first item in the inventory"""
     
     def valorTotalMetodo(n):

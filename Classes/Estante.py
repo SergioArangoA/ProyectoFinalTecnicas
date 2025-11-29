@@ -9,8 +9,7 @@ if ROOT not in sys.path:
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
-from Classes import *
-from GUI import *
+from Classes import Libro
 class Estante:
     """An Estante instance represents a book shelf in the library.
     
