@@ -33,10 +33,13 @@ class Estante:
 
     diccionarioObjeto(): Transforms dictionary to object
 
+    guardarEstanteFuncion (): This method calls the shelf attributes and creates a shelf Object wich is going
+    to be added to the list of shelves if it doesn't exist after being created. If it exist it would simply don't be added
+
     estanteriaDeficiente():This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together,
     exceed a "risk" of 8kg"""
     
-    def __init__(self, id: str, librosEnEstante: list):
+    def __init__(self, id: str, librosEnEstante: list["Libro"]):
         self.__id = id #__id, quiere decir que la variable es privada. Es decir, que no
         #puedes acceder a ella directamente. Esto lo hago, para que al cambiar el nombre
         #del stand, se puedan actualizar de inmediato en los libros del stand el nuevo
@@ -59,8 +62,27 @@ class Estante:
     @classmethod #The method belongs to the class, not to an existing object.
     def diccionarioObjeto(clsEstante, diccionarioEstante):
         """Transforms dictionary to object"""
-        return clsEstante(diccionarioEstante["id"], diccionarioEstante["librosEnEstante"], diccionarioEstante["libroEnEstante"])
+        return clsEstante(diccionarioEstante["id"], diccionarioEstante["librosEnEstante"])
     
+"""Shelf storage"""
+
+def guardarEstanteFuncion (id:str, librosEnEstante:list): 
+    """This method calls the shelf attributes and creates a shelf Object wich is going to be added to the list of shelves if it doesn't exist
+    after being created. If it exist it would simply don't be added"""
+    listaEstantes= #########Falta json con la lista
+    idNuevo= id
+    
+    for estante in listaEstantes: #Goes throught the list of shelves
+        if Estante.obtenerID()== idNuevo: #checks if the shelf is already in the list if it is, a message will show 
+            return False #Returns false so the frontend can show the message that the shelf already exist and has not been added 
+
+    nuevoEstante= Estante(idNuevo, librosEnEstante) #If the shelf doesn't exist creates a new shelf instance with the atributes
+    listaEstantes.append(nuevoEstante)#Adds the new object to the list
+
+    guardarEstante(listaEstantes)#Saves the list in the JSON
+
+    return True #Shelf added
+
 """Shelf Module"""
 
 """1. Brute force"""

@@ -18,11 +18,12 @@ from Classes.Libro import Libro
 
 
 """Master Lists of Objects
-The two lists of organized Inventory and General Inventory are defined and filled, also makes the recursive stack and pile calls
+The two lists of organized Inventory and General Inventory are defined and filled, also makes the recursive stack, pile calls and other
+main functions for the program
 
 Methods:
-guardarLibro():This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added to the organized inventory and the general inventory
-    after being created, if the book exists
+guardarLibro():This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added
+to the organized inventory and the general inventory after being created, if the book exists
 
 valorTotalAutor(): This function acts as a wrapper for the internal recursive function 'valorTotalMetodo()',
 initializing the necessary parameters and starting the exploration from the first item in the inventory
@@ -33,20 +34,23 @@ pesoPromedioAutor(): This function acts as a wrapper for the internal recursive 
 initializing the necessary parameters, variables and starting the exploration from the first item in the inventory
 
 calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
+
+funcionLlamar(): Bridge function for the frontend. Internally calls pesoPromedioAutor by sending 'normalizar', 
+Its like a wrapper for the wrapper function
 """
 inventarioOrdenado=cargarInventarioOrdenado
 inventarioGeneral=cargarInventarioGeneral
 def normalizar(cadena):
     """This method helps later to compare strings without Upper case, comma, hyphen and dot"""
-    cadena = cadena.lower()            #Convert to lower case
-    cadena = cadena.replace(" ", "")   #Remove Space
-    cadena = cadena.replace("-", "")   #Remove Hyphen 
-    cadena = cadena.replace(".", "")   #Remove dot
+    cadena= cadena.lower()            #Convert to lower case
+    cadena= cadena.replace(" ", "")   #Remove Space
+    cadena= cadena.replace("-", "")   #Remove Hyphen 
+    cadena= cadena.replace(".", "")   #Remove dot
     return cadena
 
 """List Filling"""
 #CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
-def guardarLibro (cantidad, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
+def guardarLibro(cantidad, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
     after being created"""
@@ -76,10 +80,10 @@ def guardarLibro (cantidad, isbn: str, titulo: str, autor: str, peso: float, pre
     insertado=False #Flag Var to know if the book has been already added to the Organized Inventory
 
     for i in range(len(inventarioOrdenado)):#goes throught the organized inventory to fill it 
-        libro = inventarioOrdenado[i] 
-        if isbnNuevo < libro.isbn.strip("-"):#This action is the one that allows the books to be organized
+        libro= inventarioOrdenado[i] 
+        if isbnNuevo< libro.isbn.strip("-"):#This action is the one that allows the books to be organized
             inventarioOrdenado.insert(i, nuevoLibro)#this inserts the book in the correct position
-            insertado = True #the book has been inserted
+            insertado= True #the book has been inserted
             break
 
     if not insertado: #if the book doesnt match the comparision its gonna be add to the end of the list beacuse is greater than the others
@@ -130,7 +134,7 @@ initializing the necessary parameters, variables and starting the exploration fr
 
         if n==len(inventarioOrdenado):
         #Base case, returns the final average sum of the books weights
-            if contador==0:
+            if contador== 0:
             #If the is counter is zero and the list has reach the end it means that there are no books of that author, returns zero and prints the message
                 print("No hay libros relacionados con ese autor")
                 return 0
@@ -142,12 +146,17 @@ initializing the necessary parameters, variables and starting the exploration fr
         if normalizar(LibroActual.autor)==normalizar(autor):
         #It compares the Actual Book Author (.autor) and the author that the user is looking for. If its found adds to the counter one and adds
         # to the weight sum. Returns the recursive call adding to the index 'n' one continuing the recursion
-            contador+=1
-            pesoPromedio+=LibroActual.peso
+            contador+= 1
+            pesoPromedio+= LibroActual.peso
+
             print("Indice(n)= "+ str(n)+"\n"+ "Contador= "+ str(contador)+"\n"+ "Suma Actual Peso promedio= "+ str(pesoPromedio))
         return calculoPesoPromedio(n+1, contador, pesoPromedio, normalizar)
                                    
     return calculoPesoPromedio(n, contador, pesoPromedio, normalizar)
+
+def funcionLlamar(autor, inventarioOrdenado):
+    """Bridge function for the frontend. Internally calls pesoPromedioAutor by sending normalizar, Its like a wrapper for the wrapper function"""
+    return pesoPromedioAutor(autor, inventarioOrdenado, normalizar) 
 
 peso = pesoPromedioAutor(autor, inventarioOrdenado, normalizar)
 print("\n")
