@@ -158,8 +158,8 @@ def funcionLlamar(autor, inventarioOrdenado):
     """Bridge function for the frontend. Internally calls pesoPromedioAutor by sending normalizar, Its like a wrapper for the wrapper function"""
     return pesoPromedioAutor(autor, inventarioOrdenado, normalizar) 
 
-peso = pesoPromedioAutor(autor, inventarioOrdenado, normalizar)
-print("\n")
-print("Peso Promedio = " + str(peso))
+#peso = pesoPromedioAutor(autor, inventarioOrdenado, normalizar)
+#print("\n")
+#print("Peso Promedio = " + str(peso))
     #This allows that the response from 'calculoPesoPromedio' is working on the general code and can be called, else it won't work
     #because the wrapper function is not returning anything

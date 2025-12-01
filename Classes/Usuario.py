@@ -8,7 +8,6 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
-from Data import *
 from collections import deque
 class Usuario:
     """A Usuario Instance represents a User from the library
@@ -22,8 +21,10 @@ class Usuario:
         self.historialPrestados= deque(historialPrestados)
 
     """User List filling"""
-
-    def guardarUsuarioFuncion (id:str, historialPrestados:deque): 
+    @classmethod
+    def guardarUsuarioFuncion (cls, id:str, historialPrestados:deque): 
+        from Data.DataManagement import cargarUsuarios
+        from Data.DataManagement import guardarUsuarios
         """This method calls the User attributes and creates a User Object wich is going to be added to the Users List after being created
         if it doesn't exists. If the user exists is not going to be added"""
         listaUsuarios = cargarUsuarios()

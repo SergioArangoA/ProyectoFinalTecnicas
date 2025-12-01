@@ -48,8 +48,8 @@ def abrirInventario(ventanaPrincipal):
         CampoValorTotal.config(state="normal")#This will allow to write the values in the textbox
         CampoPeso.config(state="normal")
         CampoPeso.delete(0, tk.END)
-        CampoValorTotal.delete(0,tk.END) #Delete the previous data in the textbox
-        CampoValorTotal.insert(0,str(valorTotalAutor(nombre,InventarioOrdenado, normalizar)))
+        CampoValorTotal.delete(0,tk.END) #Deletes the previous data in the textbox
+        CampoValorTotal.insert(0,str(valorTotalAutor(nombre,InventarioOrdenado)))
         CampoPeso.insert(0,str(pesoPromedioAutor(nombre,InventarioOrdenado,normalizar)))
         CampoValorTotal.config(state="disabled")#Then will block them again
         CampoPeso.config(state="disabled")
