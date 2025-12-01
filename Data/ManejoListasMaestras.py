@@ -50,7 +50,7 @@ def normalizar(cadena):
 
 """List Filling"""
 #CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
-def guardarLibro(cantidad, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, 
+def guardarLibro(isbn: str, titulo: str, autor: str, peso: float, precio: int, cantidad: int, prestados: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
     after being created"""
@@ -71,7 +71,7 @@ def guardarLibro(cantidad, isbn: str, titulo: str, autor: str, peso: float, prec
             return False #Returns False so the frontend can show a message that the amount entered is not valid
         
     #If the book doesn't exists, creates a new instance, Creates a Book object with all the attributes and adds it to the general inventory
-    nuevoLibro= Libro(isbn, titulo, autor, peso, precio, enInventario, prestados, estantes, listaEspera)
+    nuevoLibro= Libro(isbn, titulo, autor, peso, precio, cantidad, prestados, estantes, listaEspera)
     inventarioGeneral.append(nuevoLibro)
 
 
