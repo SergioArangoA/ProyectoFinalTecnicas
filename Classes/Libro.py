@@ -57,6 +57,7 @@ class Libro:
             """This method fulls the wait list. If enInventario=0 adds a User to the wait list"""
             if self.enInventario==0:
                  self.listaEspera.append(usuario.id)
+
     def libroADict(self):
         """This method converts an object book into a dictionary so it can be saved in JSON"""
         #listaEspera is converted from a deque to a  list for the JSON
@@ -65,3 +66,4 @@ class Libro:
                 "enInventario": self.enInventario, "prestados": self.prestados, "listaEspera": list(self.listaEspera), 
                 "estantes": self.estantes
             })
+    
