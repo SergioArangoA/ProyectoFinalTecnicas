@@ -69,7 +69,7 @@ class Estante:
 def guardarEstanteFuncion (id:str, librosEnEstante:list): 
     """This method calls the shelf attributes and creates a shelf Object wich is going to be added to the list of shelves if it doesn't exist
     after being created. If it exist it would simply don't be added"""
-    listaEstantes= #########Falta json con la lista
+    listaEstantes= cargarEstantes()
     idNuevo= id
     
     for estante in listaEstantes: #Goes throught the list of shelves
@@ -79,7 +79,7 @@ def guardarEstanteFuncion (id:str, librosEnEstante:list):
     nuevoEstante= Estante(idNuevo, librosEnEstante) #If the shelf doesn't exist creates a new shelf instance with the atributes
     listaEstantes.append(nuevoEstante)#Adds the new object to the list
 
-    guardarEstante(listaEstantes)#Saves the list in the JSON
+    guardarEstantes(listaEstantes)#Saves the list in the JSON
 
     return True #Shelf added
 
