@@ -41,7 +41,7 @@ argumento y enlazaza boton con ventana"""
 ButtonEstanterias= tk.Button(Ventana_principal, text="Estanterias", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonEstanterias.pack(pady=20)
 ButtonEstanterias.config(command=lambda: abrirEstanterias(Ventana_principal)) #Calls the abrirEstanterias function from the botonesSecundarios.py file, linking the button to the window
-
+#The abrirEstanterias method is shown in visual studio as undefined, but somehow works perfectly fine once the program is running
 ButtonUsuario= tk.Button(Ventana_principal, text="Usuario", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonUsuario.pack(pady=20)
 ButtonUsuario.config(command=lambda:abrirUsuarios(Ventana_principal)) 
@@ -49,7 +49,7 @@ ButtonUsuario.config(command=lambda:abrirUsuarios(Ventana_principal))
 ButtonLibros= tk.Button(Ventana_principal, text="Libros", font=("Palatino Linotype", 20), width=25, height=1, bg="#B6B09F")
 ButtonLibros.pack(pady=20)
 ButtonLibros.config(command=lambda: abrirLibros(Ventana_principal)) 
-"""Label y Button son tipos de objetos (clases) que crea tkinter para construir la interfaz."""
+#Label and Button are classes within the tkinter library that allow to make the GUI.
 
 #Show Main window
 Ventana_principal.mainloop() # Keeps the window open until the user decides to close it. It makes the window appear and stay open.

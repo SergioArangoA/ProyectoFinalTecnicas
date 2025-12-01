@@ -78,15 +78,15 @@ def guardarUsuarios(listaUsuarios:list[Usuario]):
     with open("Usuarios.json","w",encoding="utf-8") as archivo:
         listaDiccionarioUsuarios = []
         for usuario in listaUsuarios:
-            listaDiccionarioUsuarios.append(usuario.usuarioADiccionario)
-        json.dump(listaDiccionarioUsuarios)
+            listaDiccionarioUsuarios.append(usuario.usuarioADiccionario())
+        json.dump(listaDiccionarioUsuarios,archivo,ensure_ascii=False, indent=4)
 
 def cargarUsuarios():
     listaUsuarios = []
     try:
         with open ("Usuarios.json","r",encoding="utf-8") as archivo:
             listaCargadaUsuarios = json.load(archivo)
-            listaUsuarios = [Estante(**usuario)for usuario in  listaCargadaUsuarios] #Each dictionary loaded in the JSON is turned into a Usuario instance
+            listaUsuarios = [Usuario(**usuario)for usuario in  listaCargadaUsuarios] #Each dictionary loaded in the JSON is turned into a Usuario instance
     
     except (FileNotFoundError, json.JSONDecodeError):
         print("No se encontró lista de usuarios guardada, creando una lista vacía")
