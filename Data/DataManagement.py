@@ -9,6 +9,8 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 import json
 from Classes.Libro import Libro
+from Classes.Estante import Estante
+from Classes.Usuario import Usuario
 
 #HAY QUE CREAR LAS VARIABLES DE COLOR DUDOSO
 def guardarInventarioGeneral(InventarioGeneral: list[Libro]):
@@ -52,11 +54,45 @@ def cargarInventarioOrdenado():
         print("No encontró un inventario general, creando una lista vacía.")
         return []
     
-def guardarEstantes(ListaEstantes):
+def guardarEstantes(ListaEstantes: list[Estante]):
     """Saves the list of shelves in a JSON"""
     with open ("Estantes.json", "w",encoding = "utf-8") as archivo:
         ListaCargadaEstantes= [estante.objetoDiccionario() for estante in ListaEstantes] #Desde la funcion que convierte objeto a diccionario, es decir los estantes de objeto estante en diccionario
-        json.dump(ListaEstantes,archivo, ensure_ascii=False, indent = 4) #la llama y lee cada elemento en ese diccionario y crea una lista de diccionarios y la guarda en un JSON
+        json.dump(ListaCargadaEstantes,archivo, ensure_ascii=False, indent = 4) #la llama y lee cada elemento en ese diccionario y crea una lista de diccionarios y la guarda en un JSON
+
+def cargarEstantes():
+    """Loads the list of shelves saved in the JSON"""
+    listaEstantes = []
+    try:
+        with open ("Estantes.json","r",encoding="utf-8") as archivo:
+            ListaCargadaEstantes = json.load(archivo)
+            listaEstantes = [Estante(**estante)for estante in ListaCargadaEstantes] #Each dictionary loaded in the JSON is turned into a Estante instance
+    
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("No se encontró lista de estantes guardada, creando una lista vacía")
+    
+    return listaEstantes
+
+def guardarUsuarios(listaUsuarios:list[Usuario]):
+    """Saves the user list in a JSON file"""
+    with open("Usuarios.json","w",encoding="utf-8") as archivo:
+        listaDiccionarioUsuarios = []
+        for usuario in listaUsuarios:
+            listaDiccionarioUsuarios.append(usuario.usuarioADiccionario)
+        json.dump(listaDiccionarioUsuarios)
+
+def cargarUsuarios():
+    listaUsuarios = []
+    try:
+        with open ("Usuarios.json","r",encoding="utf-8") as archivo:
+            listaCargadaUsuarios = json.load(archivo)
+            listaUsuarios = [Estante(**usuario)for usuario in  listaCargadaUsuarios] #Each dictionary loaded in the JSON is turned into a Usuario instance
+    
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("No se encontró lista de usuarios guardada, creando una lista vacía")
+    return listaUsuarios
+
+
 
 def guardarHistorialPrestamos(PilaHistorialPrestamos):
     """Saves the borrowed books Pile in a JSON file"""
@@ -65,5 +101,5 @@ def guardarHistorialPrestamos(PilaHistorialPrestamos):
 
 def guardarListaEspera(listaEspera):
     """Saves the wait list as a list in a JSON"""
-    with open("Lista de Espera.json","w",encoding = "utf-8") as archivo:
+    with open("listaEspera.json","w",encoding = "utf-8") as archivo:
         json.dump(listaEspera,archivo, ensure_ascii=False, indent = 4)
