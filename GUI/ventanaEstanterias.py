@@ -12,7 +12,8 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
-from Data import *
+from Data.DataManagement import guardarEstantes
+from Data.DataManagement import cargarEstantes
 from Classes.Estante import Estante
 from GUI import *
 # Agregar la carpeta raíz del proyecto al PYTHONPATH
@@ -22,12 +23,38 @@ if ROOT not in sys.path:
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
-from Classes import *
+from Classes.Estante import Estante
+from Classes.Estante import guardarEstanteFuncion
 from GUI import *
 
 #STAND WINDOW
 def abrirEstanterias(ventanaPrincipal):
     """Opens a window, which contains the Stand class CRUD."""
+    def guardarEstanterias():
+        """A method that read's the id in the stand's id textbox, then creates a stand with said id"""
+        id = CampoTextoID.get()
+        if id:
+            agregado = guardarEstanteFuncion(id,[])
+            if not agregado:
+               ventanaError("No se agregó el estante porque ya existía uno con la misma id")
+            else:
+               CampoImpresionID.config(state="normal")
+               CampoImpresionID.delete(0,tk.END)
+               CampoImpresionID.insert(0,str(id))
+               CampoImpresionID.config(state="disabled")
+        else:
+            ventanaError("Por favor ingrese un id para poder agregar el estante")
+
+    def ventanaError(mensaje: str):
+        """A pop up window that will print the message sent"""
+        ventana = tk.Toplevel(bg= "#EAE4D5")
+        ventana.title("ERROR")
+        labelError = tk.Label(ventana, text=mensaje,font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
+        labelError.pack()
+        
+    
+
+
 
     #STAND WINDOW SETTINGS
 
@@ -67,7 +94,7 @@ def abrirEstanterias(ventanaPrincipal):
     labelID.grid(row=0,column=0,pady=10)
     CampoTextoID= tk.Entry(frameEstante,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
     CampoTextoID.grid(row=0,column=1,pady=10)
-    botonAgregar = tk.Button(frameEstante,text="Agregar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonAgregar = tk.Button(frameEstante,text="Agregar",command=lambda: guardarEstanterias(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonAgregar.grid(row=1,column=0,sticky="nsew",padx=10,pady=20)
     botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonModificar.grid(row=1,column=1,sticky="nsew",padx=10,pady=20)
@@ -94,7 +121,7 @@ def abrirEstanterias(ventanaPrincipal):
 
     labelISBN2 = tk.Label(frameLibros,text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
     labelISBN2.grid(row=2,column=0,pady=10)
-    CampoTextoISBN2= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoISBN2= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2,state="disabled")
     CampoTextoISBN2.grid(row=2,column=1,pady=10)
     labelPresente2 = tk.Label(frameLibros,text="En estante: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
     labelPresente2.grid(row=2,column=2,pady=10)

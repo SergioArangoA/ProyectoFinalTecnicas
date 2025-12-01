@@ -12,6 +12,7 @@ from Data.DataManagement import cargarInventarioGeneral
 from Data.DataManagement import cargarInventarioOrdenado
 from Data.ManejoListasMaestras import valorTotalAutor
 from Data.ManejoListasMaestras import pesoPromedioAutor
+from Data.ManejoListasMaestras import normalizar
 
 #INVENTORY WINDOW
 def abrirInventario(ventanaPrincipal):
@@ -47,9 +48,9 @@ def abrirInventario(ventanaPrincipal):
         CampoValorTotal.config(state="normal")#This will allow to write the values in the textbox
         CampoPeso.config(state="normal")
         CampoPeso.delete(0, tk.END)
-        CampoValorTotal.delete(0,tk.END) #Delete the previous data in the textbox
+        CampoValorTotal.delete(0,tk.END) #Deletes the previous data in the textbox
         CampoValorTotal.insert(0,str(valorTotalAutor(nombre,InventarioOrdenado)))
-        CampoPeso.insert(0,str(pesoPromedioAutor(nombre,InventarioOrdenado)))
+        CampoPeso.insert(0,str(pesoPromedioAutor(nombre,InventarioOrdenado,normalizar)))
         CampoValorTotal.config(state="disabled")#Then will block them again
         CampoPeso.config(state="disabled")
 

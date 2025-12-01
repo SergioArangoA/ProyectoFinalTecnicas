@@ -7,8 +7,6 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.append(ROOT)
 
-# IMPORTS ABSOLUTOS (estos nunca fallan)
-from Data import *
 from Classes import Libro
 class Estante:
     """An Estante instance represents a book shelf in the library.
@@ -69,17 +67,19 @@ class Estante:
 def guardarEstanteFuncion (id:str, librosEnEstante:list): 
     """This method calls the shelf attributes and creates a shelf Object wich is going to be added to the list of shelves if it doesn't exist
     after being created. If it exist it would simply don't be added"""
-    listaEstantes= #########Falta json con la lista
+    from Data.DataManagement import cargarEstantes #The imports are made here to avoid circular imports when initializing the program
+    from Data.DataManagement import guardarEstantes
+    listaEstantes= cargarEstantes()
     idNuevo= id
     
     for estante in listaEstantes: #Goes throught the list of shelves
-        if Estante.obtenerID()== idNuevo: #checks if the shelf is already in the list if it is, a message will show 
+        if estante.obtenerID()== idNuevo: #checks if the shelf is already in the list if it is, a message will show 
             return False #Returns false so the frontend can show the message that the shelf already exist and has not been added 
 
     nuevoEstante= Estante(idNuevo, librosEnEstante) #If the shelf doesn't exist creates a new shelf instance with the atributes
     listaEstantes.append(nuevoEstante)#Adds the new object to the list
 
-    guardarEstante(listaEstantes)#Saves the list in the JSON
+    guardarEstantes(listaEstantes)#Saves the list in the JSON
 
     return True #Shelf added
 

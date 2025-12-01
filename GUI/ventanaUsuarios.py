@@ -1,9 +1,35 @@
 import tkinter as tk
 from tkinter import ttk
+from Classes.Usuario import Usuario
 
 def abrirUsuarios(ventanaPrincipal):
 
     """Opens the User class CRUD"""
+
+    def guardarUsuarios():
+        """Reads the user's ID in the ID label and adds it to the users list"""
+        id = CampoTextoIngresarUsuario.get()
+        if id:
+            succes = Usuario.guardarUsuarioFuncion(id,[]) #Succes will be true if the user was added, if the user already existed, it will be false
+            if not succes:
+                ventanaError("El usuario que usted quiere agregar ya existe, no se pudo agregar.")
+            else:
+                        CampoImprimirUsuario.config(state="normal")
+                        CampoImprimirUsuario.delete(0,tk.END)
+                        CampoImprimirUsuario.insert(0,str(id))
+                        CampoImprimirUsuario.config(state="disabled")
+
+        else:
+            ventanaError("Por favor ingrese el id del usuario que desea agregar")
+    
+    def ventanaError(mensaje: str):
+        """A pop up window that will print the message sent"""
+        ventana = tk.Toplevel(bg= "#EAE4D5")
+        ventana.title("ERROR")
+        labelError = tk.Label(ventana, text=mensaje,font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
+        labelError.pack()
+        
+
 
     #WINDOW SETTINGS
     ventanaPrincipal.withdraw()
@@ -61,7 +87,7 @@ def abrirUsuarios(ventanaPrincipal):
     CampoImprimirUsuario= tk.Entry(frameIngresarUsuario,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
     CampoImprimirUsuario.grid(row=0,column=2,padx=20)
 
-    AgregarUsuario= tk.Button(frameBotonesUsuario, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
+    AgregarUsuario= tk.Button(frameBotonesUsuario,command=lambda: guardarUsuarios(), text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
 
     ModificarUsuario= tk.Button(frameBotonesUsuario, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
 
