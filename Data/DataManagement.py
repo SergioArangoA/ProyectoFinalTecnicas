@@ -54,13 +54,6 @@ def cargarInventarioOrdenado():
         print("No encontró un inventario general, creando una lista vacía.")
         return []
     
-<<<<<<< HEAD
-def guardarEstantes(listaEstantes):
-    """Saves the list of shelves in a JSON"""
-    with open ("Estantes.json", "w",encoding = "utf-8") as archivo:
-        ListaCargadaEstantes= [estante.objetoDiccionario() for estante in listaEstantes] #Desde la funcion que convierte objeto a diccionario, es decir los estantes de objeto estante en diccionario
-        json.dump(listaEstantes,archivo, ensure_ascii=False, indent = 4) #la llama y lee cada elemento en ese diccionario y crea una lista de diccionarios y la guarda en un JSON
-=======
 def guardarEstantes(ListaEstantes: list[Estante]):
     """Saves the list of shelves in a JSON"""
     with open ("Estantes.json", "w",encoding = "utf-8") as archivo:
@@ -100,7 +93,6 @@ def cargarUsuarios():
     return listaUsuarios
 
 
->>>>>>> 957acc66b501a03666e6f56969534b78a0f30966
 
 def guardarHistorialPrestamos(PilaHistorialPrestamos):
     """Saves the borrowed books Pile in a JSON file"""

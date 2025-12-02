@@ -27,15 +27,10 @@ class Estante:
     exceeding the 8kg weight limit. It'll also search for the one that will have the highest
     combined value in COP. It will also print in console the proccess.
 
-    objetoDiccionario(): This Method transform the object to a dictionary
+    objetoDiccionario(): This Method transform the object shelf to a dictionary
 
-    diccionarioObjeto(): Transforms dictionary to object
-
-    guardarEstanteFuncion (): This method calls the shelf attributes and creates a shelf Object wich is going
-    to be added to the list of shelves if it doesn't exist after being created. If it exist it would simply don't be added
-
-    estanteriaDeficiente():This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together,
-    exceed a "risk" of 8kg"""
+    diccionarioObjeto(): Transforms dictionary to object shelf
+    """
     
     def __init__(self, id: str, librosEnEstante: list["Libro"]):
         self.__id = id #__id, quiere decir que la variable es privada. Es decir, que no
@@ -54,58 +49,11 @@ class Estante:
         self.__id= nuevaID
 
     def objetoDiccionario(self):
-        """Transforms the object to a dictionary"""
+        """Transforms the object shelf to a dictionary"""
         return({"id": self.obtenerID(), "librosEnEstante": self.librosEnEstante})
     
     @classmethod #The method belongs to the class, not to an existing object.
     def diccionarioObjeto(clsEstante, diccionarioEstante):
-        """Transforms dictionary to object"""
+        """Transforms dictionary to object shelf"""
         return clsEstante(diccionarioEstante["id"], diccionarioEstante["librosEnEstante"])
     
-"""Shelf storage"""
-
-def guardarEstanteFuncion (id:str, librosEnEstante:list): 
-    """This method calls the shelf attributes and creates a shelf Object wich is going to be added to the list of shelves if it doesn't exist
-    after being created. If it exist it would simply don't be added"""
-    from Data.DataManagement import cargarEstantes #The imports are made here to avoid circular imports when initializing the program
-    from Data.DataManagement import guardarEstantes
-    listaEstantes= cargarEstantes()
-    idNuevo= id
-    
-    for estante in listaEstantes: #Goes throught the list of shelves
-        if estante.obtenerID()== idNuevo: #checks if the shelf is already in the list if it is, a message will show 
-            return False #Returns false so the frontend can show the message that the shelf already exist and has not been added 
-
-    nuevoEstante= Estante(idNuevo, librosEnEstante) #If the shelf doesn't exist creates a new shelf instance with the atributes
-    listaEstantes.append(nuevoEstante)#Adds the new object to the list
-
-    guardarEstantes(listaEstantes)#Saves the list in the JSON
-
-    return True #Shelf added
-
-"""Shelf Module"""
-
-"""1. Brute force"""
-
-def estanteriaDeficiente(inventarioOrdenado):
-    """This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg"""
-    listaLibrosEstanteriaDeficiente=[]
-    #This list stores all the 4 books combinations that exceeds the 8kg risk
-    
-    for Libro1 in inventarioOrdenado: #A For for each book in the shelf (4)
-        for Libro2 in inventarioOrdenado:
-            for Libro3 in inventarioOrdenado:
-                for Libro4 in inventarioOrdenado:
-                    if Libro1.enInventario>0 and Libro2.enInventario>0 and Libro3.enInventario>0 and Libro4.enInventario>0:
-                        #Verifies that the four books are available in the inventory
-                        
-                        if Libro1.peso+Libro2.peso+Libro3.peso+Libro4>8:
-                            #If sum of the weights is above eight the books are added as a list in 'listaLibrosEstanteriaDeficiente'
-
-                            listaLibrosEstanteriaDeficiente.append([Libro1,Libro2,Libro3,Libro4])      
-                                                 
-    if len(listaLibrosEstanteriaDeficiente) == 0: #If the cycles are done and the final lenght of store list is zero it means that there are'nt enough books 
-        return "No hay suficientes libros" #This messaje shows on the open window 'ventanaEstanterias'
-    return listaLibrosEstanteriaDeficiente #Returns the final list
-
-
