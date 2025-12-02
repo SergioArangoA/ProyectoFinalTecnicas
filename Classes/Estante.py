@@ -62,6 +62,25 @@ class Estante:
         """Transforms dictionary to object"""
         return clsEstante(diccionarioEstante["id"], diccionarioEstante["librosEnEstante"])
     
+    def calcularPesoAcumulado(self):
+        """Calculates the accumulated weight of the books in the stand"""
+        total = 0
+        for libro in self.librosEnEstante:
+            total += libro.peso
+        return total
+    
+    def cantidadLibros(self):
+        """Returns the amount of books that a stand has"""
+        return len(self.librosEnEstante)
+    
+    def calcularValorAcumulado(self):
+        """Calculates the accumulated value of books in a stand"""
+        total = 0
+        for libro in self.librosEnEstante:
+            total += libro.precio
+        return total
+
+    
 """Shelf storage"""
 
 def guardarEstanteFuncion (id:str, librosEnEstante:list): 
