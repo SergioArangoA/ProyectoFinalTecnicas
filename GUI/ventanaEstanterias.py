@@ -30,6 +30,27 @@ from GUI import *
 #STAND WINDOW
 def abrirEstanterias(ventanaPrincipal):
     """Opens a window, which contains the Stand class CRUD."""
+
+    def abrirTablaLibros():
+        """Opens a new window that contains the data of the books saved in the stand's inventory"""
+        listaLibros = list[Libro]
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title("Libros en estante UwU")
+
+        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PESO','PRECIO'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ISBN',text='ISBN')
+        tabla.heading('TITULO',text='TÍTULO')
+        tabla.heading('AUTOR',text='AUTOR')
+        tabla.heading('PESO',text='PESO(Kg)')
+        tabla.heading('PRECIO',text='PRECIO')
+        tabla.pack()
+
+        for libro in listaLibros:
+            tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
+                                                    libro.titulo,
+                                                    libro.autor,
+                                                    str(libro.peso),
+                                                    str(libro.precio)))
     def guardarEstanterias():
         """A method that read's the id in the stand's id textbox, then creates a stand with said id"""
         id = CampoTextoID.get()
@@ -38,10 +59,10 @@ def abrirEstanterias(ventanaPrincipal):
             if not agregado:
                ventanaError("No se agregó el estante porque ya existía uno con la misma id")
             else:
-               CampoImpresionID.config(state="normal")
-               CampoImpresionID.delete(0,tk.END)
-               CampoImpresionID.insert(0,str(id))
-               CampoImpresionID.config(state="disabled")
+               campoImpresionID.config(state="normal")
+               campoImpresionID.delete(0,tk.END)
+               campoImpresionID.insert(0,str(id))
+               campoImpresionID.config(state="disabled")
         else:
             ventanaError("Por favor ingrese un id para poder agregar el estante")
 
@@ -51,6 +72,25 @@ def abrirEstanterias(ventanaPrincipal):
         ventana.title("ERROR")
         labelError = tk.Label(ventana, text=mensaje,font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
         labelError.pack()
+
+    def abrirListaEstantes():
+        """Opens a new window that contains a table with the list of stands and their characteristics"""
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title("Lista de estantes")
+        listaEstantes = cargarEstantes() #Loads the stand list
+
+        tabla = ttk.Treeview(ventanaTabla, columns=('ID','CANTIDAD DE LIBROS','PESO','VALOR ACUMULADO'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ID',text='ID')
+        tabla.heading('CANTIDAD DE LIBROS',text='CANTIDAD DE LIBROS')
+        tabla.heading('PESO',text='PESO')
+        tabla.heading('VALOR ACUMULADO',text='VALOR ACUMULADO') #the text that will be shown on each heading
+        tabla.pack()
+
+        for estante in listaEstantes:
+            tabla.insert(parent='',index=tk.END,values=(estante.obtenerID(), #tk.END adds the element at the end of the table
+                                                    estante.cantidadLibros(),
+                                                    estante.calcularPesoAcumulado(),
+                                                    str(estante.calcularValorAcumulado()))) #Each one of the parameters that will be shown in the table
         
     
 
@@ -66,21 +106,35 @@ def abrirEstanterias(ventanaPrincipal):
     ventanaEstante.state('zoomed')
     ventanaEstante.resizable(True, True)
     ventanaEstante.columnconfigure(0,weight=1)
+    ventanaEstante.columnconfigure(1,weight=0)
+    ventanaEstante.columnconfigure(2,weight=1)
     ventanaEstante.rowconfigure(0,weight=1)
     ventanaEstante.rowconfigure(1,weight=1)
     ventanaEstante.rowconfigure(2,weight=1)
+    ventanaEstante.rowconfigure(3,weight=1)
     ventanaEstante.columnconfigure(0, weight=1)
     ventanaEstante.columnconfigure(1,weight=1)
 
     #STAND'S WINDOWS FRAMES
     frameTitulo = tk.Frame(ventanaEstante,bg="#EAE4D5")
-    frameTitulo.grid(row=0,column=0)
+    frameTitulo.grid(row=0,column=1)
+    frameTitulo.columnconfigure(0,weight=1)
 
     frameEstante = tk.Frame(ventanaEstante,bg= "#EAE4D5")
-    frameEstante.grid(row=1,column=0,padx=10)
+    frameEstante.grid(row=1,column=1,padx=10)
+    frameEstante.columnconfigure(0,weight=1)
+    frameEstante.columnconfigure(1,weight=1)
+
+    frameIDEstante = tk.Frame(frameEstante,bg= "#EAE4D5")
+    frameIDEstante.grid(row=0,column=0,columnspan=2)
 
     frameLibros =tk.Frame(ventanaEstante, bg = "#EAE4D5")
-    frameLibros.grid(row=2,column=0)
+    frameLibros.grid(row=3,column=1)
+    frameLibros.columnconfigure(0, weight=1)
+    frameLibros.columnconfigure(1,weight=1)
+  
+    frameInfoEstanteActual = tk.Frame(frameLibros,bg= "#EAE4D5")
+    frameInfoEstanteActual.grid(row=0,column=0,columnspan=2)
 
     #WINDOW'S TITLE
 
@@ -90,67 +144,54 @@ def abrirEstanterias(ventanaPrincipal):
 
     #STAND'S ID CRUD
 
-    labelID = tk.Label(frameEstante,text="ID: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelID.grid(row=0,column=0,pady=10)
-    CampoTextoID= tk.Entry(frameEstante,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-    CampoTextoID.grid(row=0,column=1,pady=10)
+    labelID = tk.Label(frameIDEstante,text="ID: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelID.grid(row=0,column=0,pady=10,sticky="e")
+    CampoTextoID= tk.Entry(frameIDEstante,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoID.grid(row=0,column=1,pady=10,sticky="w")
     botonAgregar = tk.Button(frameEstante,text="Agregar",command=lambda: guardarEstanterias(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonAgregar.grid(row=1,column=0,sticky="nsew",padx=10,pady=20)
+    botonAgregar.grid(row=1,column=0,padx=10,pady=20,sticky="e")
     botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonModificar.grid(row=1,column=1,sticky="nsew",padx=10,pady=20)
+    botonModificar.grid(row=1,column=1,padx=10,pady=20,sticky="w")
     botonBuscar = tk.Button(frameEstante,text="Buscar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonBuscar.grid(row=2,column=0,sticky="nsew",padx=10,pady=20)
-    botonEliminar = tk.Button(frameEstante,text="Buscar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonEliminar.grid(row=2,column=1,sticky="nsew",padx=10,pady=20)
-    botonListaEstantes = tk.Button(frameEstante,text="Abrir lista de estantes",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonListaEstantes.grid(row=3,column=0,sticky="nsew",padx=10,pady=20,columnspan=2)
+    botonBuscar.grid(row=2,column=0,padx=10,pady=20,sticky="e")
+    botonEliminar = tk.Button(frameEstante,text="Eliminar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonEliminar.grid(row=2,column=1,padx=10,pady=20,sticky="w")
+    botonListaEstantes = tk.Button(frameEstante,text="Abrir lista de estantes",command=lambda:abrirListaEstantes(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonListaEstantes.grid(row=3,column=0,padx=10,pady=20,columnspan=2)
 
 
     #STAND'S CONTAINED BOOKS CRUD
-    CampoImpresionID= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-    CampoImpresionID.grid(row=0,column=1,pady=10)
+    labelEstanteActual = tk.Label(frameInfoEstanteActual,text="Estante actual: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelEstanteActual.grid(row=0,column=0,sticky="e")
+    campoImpresionID = tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2,state="disabled")
+    campoImpresionID.grid(row=0,column=1,pady=10,sticky="w")
+    
+    labelCantidadLibros = tk.Label(frameInfoEstanteActual,text="Cantidad de libros: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelCantidadLibros.grid(row=1,column=0,pady=10,sticky="e")
+    CampoTextoISBN= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoISBN.grid(row=1,column=1,pady=10,sticky="w")
 
-    labelISBN1 = tk.Label(frameLibros,text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelISBN1.grid(row=1,column=0,pady=10)
-    CampoTextoISBN1= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-    CampoTextoISBN1.grid(row=1,column=1,pady=10)
-    labelPresente1 = tk.Label(frameLibros,text="En estante: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelPresente1.grid(row=1,column=2,pady=10)
-    CampoTextoPresente1= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
-    CampoTextoPresente1.grid(row=1,column=3,pady=10)
+    labelPeso = tk.Label(frameInfoEstanteActual,text="Peso acumulado:", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelPeso.grid(row=2,column=0,pady=10,sticky="e")
+    CampoTextoPeso= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2,state="disabled")
+    CampoTextoPeso.grid(row=2,column=1,pady=10,sticky="w")
 
-    labelISBN2 = tk.Label(frameLibros,text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelISBN2.grid(row=2,column=0,pady=10)
-    CampoTextoISBN2= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2,state="disabled")
-    CampoTextoISBN2.grid(row=2,column=1,pady=10)
-    labelPresente2 = tk.Label(frameLibros,text="En estante: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelPresente2.grid(row=2,column=2,pady=10)
-    CampoTextoPresente2 = tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
-    CampoTextoPresente2.grid(row=2,column=3,pady=10)
+    botonAbrirListaLibros = tk.Button(frameInfoEstanteActual,text="Lista de libros",command=lambda: abrirTablaLibros(), width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonAbrirListaLibros.grid(row=3,column=0,columnspan=2,sticky="nsew")
 
-    labelISBN3 = tk.Label(frameLibros,text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelISBN3.grid(row=3,column=0,pady=10)
-    CampoTextoISBN3= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-    CampoTextoISBN3.grid(row=3,column=1,pady=10)
-    labelPresente3 = tk.Label(frameLibros,text="En estante: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelPresente3.grid(row=3,column=2,pady=10)
-    CampoTextoPresente3 = tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
-    CampoTextoPresente3.grid(row=3,column=3,pady=10)
+    labelISBN = tk.Label(frameInfoEstanteActual,text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelISBN.grid(row=4,column=0,pady=10,sticky="e")
+    CampoTextoISBN= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoISBN.grid(row=4,column=1,pady=10,sticky="w")
 
-    labelISBN4 = tk.Label(frameLibros,text="ISBN: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelISBN4.grid(row=4,column=0,pady=10)
-    CampoTextoISBN4= tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-    CampoTextoISBN4.grid(row=4,column=1,pady=10)
-    labelPresente4 = tk.Label(frameLibros,text="En estante: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
-    labelPresente4.grid(row=4,column=2,pady=10)
-    CampoTextoPresente4 = tk.Entry(frameLibros,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2, state="disabled")
-    CampoTextoPresente4.grid(row=4,column=3,pady=10)
+    botonAgregarLibro = tk.Button(frameLibros,text="Agregar libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonAgregarLibro.grid(row=2,column=0,pady=10,sticky="e",padx=10)
+    botonEliminarLibro = tk.Button(frameLibros,text="Remover libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonEliminarLibro.grid(row=2,column=1,pady=10,sticky="w",padx=10)
 
-    botonActualizar = tk.Button(frameLibros,text="Actualizar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonActualizar.grid(row=0,column=3,sticky="nsew",padx=10,pady=20)
     botonOrdenarOptimo = tk.Button(frameLibros,text="Ordenamiento óptimo",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonOrdenarOptimo.grid(row=6,column=0,padx=10,pady=20, columnspan=2)
+    botonOrdenarOptimo.grid(row=3,column=0,pady=20,sticky="e",padx=10)
     botonOrdenarDeficiente = tk.Button(frameLibros,text="Ordenamiento deficiente",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
-    botonOrdenarDeficiente.grid(row=6,column=3,padx=10,pady=20, columnspan=2)
+    botonOrdenarDeficiente.grid(row=3,column=1,pady=20,sticky="w",padx=10)
 
-    volver=tk.Button(ventanaEstante, text="VOLVER AL MENÚ", command=lambda: [ventanaEstante.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=3, column=0, padx=10, pady=20)
+    volver=tk.Button(ventanaEstante, text="VOLVER AL MENÚ", command=lambda: [ventanaEstante.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=4, column=1, padx=10, pady=20,sticky="w")
