@@ -38,7 +38,7 @@ class Libro:
     
     def __init__(self, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, estantes: list[str],listaEspera: deque | None = None):
         #con __innit_ definimos los atributos con los que se creara una instancia de la clase. Se especifícan todos los atributos que se importaran
-        self.isbn = isbn
+        self.isbn = str(isbn)
         self.titulo = titulo
         self.autor = autor
         self.peso = peso
