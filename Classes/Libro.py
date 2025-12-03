@@ -31,7 +31,8 @@ class Libro:
         llenarListaEspera(): This method Fulls the wait List with Users
 
         libroADict(): This method converts an object book into a dictionary so it can be saved in JSON
-    """
+        """
+    
     #ListaEspera es el nombre del parámetro. Puede ser de tipo deque o None (esa barra | se lee como “o”).
     #El valor por defecto es None. Es decir: si no pasas nada al crear el objeto, ListaEspera será None.
     
