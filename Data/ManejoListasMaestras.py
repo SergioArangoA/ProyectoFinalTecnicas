@@ -444,3 +444,22 @@ def busquedaPorAutor(autor:str,librosAutor =[],  n=0):
         librosAutor.append(inventarioGeneral[n])
 
     return busquedaPorAutor(autor,librosAutor,n+1 )
+
+def busquedaporTitulo(titulo:str, librosTitulo=[], n=0):
+    """This method goes through the general inventory and searches for the asked title if the title is found is going
+    to create a list with all the found books of the same title, if it isn't found returns a empty list or false for each case"""
+    inventarioGeneral= cargarInventarioGeneral()
+
+    if librosTitulo is None: 
+        librosTitulo=[]
+
+    if n>= len(inventarioGeneral):
+        if librosTitulo:
+            return librosTitulo
+        else:
+            return False
+    
+    if inventarioGeneral[n].titulo== titulo:
+        librosTitulo.append(inventarioGeneral[n])
+
+    return busquedaporTitulo(titulo,librosTitulo,n+1 )
