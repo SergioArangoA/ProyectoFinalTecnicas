@@ -29,6 +29,7 @@ def abrirLibros(ventanaPrincipal):
         precio = int(CampoTextoPrecio.get())
         cantidad = ventanaCantidadLibros(True) #Opens a new window that will ask the amount they want to add
         if isbn and titulo and autor and peso and precio and cantidad:
+            #If the user filled every box, proceeds to do the verifications before finally adding the book
             while cantidad < 0:
                 ventanaError("La cantidad no puede ser un número negativo")
                 cantidad = ventanaCantidadLibros(True)
@@ -38,6 +39,7 @@ def abrirLibros(ventanaPrincipal):
             else:
                 ventanaError("No se agregó ningún libro porque la cantidad ingresada fue 0")
         else:
+            #If the user didn't fill all the boxes, shows him an error
             ventanaError("Asegúrese de llenar todos los campos antes de agregar el libro")
         
 
