@@ -67,5 +67,6 @@ class Estante:
     def obtenerCantidadDeLibros(self):
         """Returns the amount of books inside the stand"""
         return len(self.librosEnEstante)
+    
 
     
