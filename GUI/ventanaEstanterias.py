@@ -25,7 +25,7 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
 from Classes.Estante import Estante
-from Data.ManejoListasMaestras import guardarEstanteFuncion, modificarEstante
+from Data.ManejoListasMaestras import guardarEstanteFuncion
 from GUI import *
 
 #STAND WINDOW
@@ -102,22 +102,7 @@ def abrirEstanterias(ventanaPrincipal):
         
         else:
             ventanaError("Por favor agregue un ID para poder buscar el estante")
-
-    def modificarIDEstante():
-        """Checks that the user has previously searched a stand, then modifies its ID with the new one"""
-
-        viejoID = campoImpresionID.get()
-        if viejoID:
-            nuevoID = CampoTextoID.get()
-            if nuevoID:
-                modificarEstante(viejoID,nuevoID)
-                imprimirEstante()
-            
-            else:
-                ventanaError("Por favor ingrese un nuevo ID para poderlo modificar")
-        
-        else:
-            ventanaError("Por favor primero busque un estante antes de hacerle modificaciones")
+    
     def borrarEstante():
         """Deletes the shelf from the shelf list"""
         id = campoImpresionID.get()
@@ -227,7 +212,7 @@ def abrirEstanterias(ventanaPrincipal):
     CampoTextoID.grid(row=0,column=1,pady=10,sticky="w")
     botonAgregar = tk.Button(frameEstante,text="Agregar",command=lambda: guardarEstanterias(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonAgregar.grid(row=1,column=0,padx=10,pady=20,sticky="e")
-    botonModificar = tk.Button(frameEstante,text="Modificar",command = lambda: modificarIDEstante(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonModificar.grid(row=1,column=1,padx=10,pady=20,sticky="w")
     botonBuscar = tk.Button(frameEstante,text="Buscar", command=lambda: imprimirEstante(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonBuscar.grid(row=2,column=0,padx=10,pady=20,sticky="e")
