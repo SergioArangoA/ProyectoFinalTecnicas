@@ -51,7 +51,7 @@ normalizar():This method helps later to compare strings without Upper case, comm
     can show a succes message
 
     estanteriaDeficiente(): This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg
-
+    
  --USER RELATED METHODS--
     guardarUsuarioFuncion(): This method calls the User attributes and creates a User Object wich is going to be added to the Users List after being created
     if it doesn't exists. If the user exists is not going to be added
@@ -89,9 +89,11 @@ normalizar():This method helps later to compare strings without Upper case, comm
         If the ISBN is less than the one being searched for, it moves through the inventory to the right,
         meaning the ascending part; if greater, it moves to the left, the descending part, and if it doesn't find anything, it returns -1, meaning the book was not found
 
+--MERGE SORT--
+    reporteGlobal(): This method is the MERGE SORT recursion part, this divides the general inventory list in two lists and it runs until the base case is met,
+    it means when the list has only one element, and then it calls the 'mezclado' method that organizes the data
 
-
-
+    mezclado(): This method is the MERGE SORT organization part, Sort in ascending order by the value (COP) of the books from the previously divided lists
 """
 inventarioOrdenado=cargarInventarioOrdenado
 inventarioGeneral=cargarInventarioGeneral
@@ -503,18 +505,45 @@ def busquedaBinISBN(inventarioOrdenado, isbnBuscado:str):
     return -1 #Not found
 
 """MERGE SORT"""
-""": Este algoritmo debe usarse para generar un  Reporte Global de inventario,
- ordenado por el atributo Valor (COP). El reporte generado  también debe poder almacenarse en un archivo.
- ordenado de forma ascendente"""
 
-def reporteGlobal():
-    inventarioGeneral= cargarInventarioGeneral()
-    largo=len(inventarioGeneral)-1
-    medio=largo//2
-    lista1= inventarioGeneral[:medio]
-    lista2=  inventarioGeneral[medio:]
-    for i in range(largo//2):
-        lista1.append(inventarioGeneral[i])
+def reporteGlobal(inventarioGeneralLista):
+    """This method is the MERGE SORT recursion part, this divides the general inventory list in two lists and it runs until the base case is met,
+     it means when the list has only one element, and then it calls the 'mezclado' method that organizes the data """
+
+    if len(inventarioGeneralLista) <= 1: #Base case when there is only one element on the list
+        return inventarioGeneralLista #returns the one element list
     
-    for i in range (largo//2,largo):
-        lista2.append(inventarioGeneral[i])
+    largo=len(inventarioGeneral)-1 
+    medio=largo//2
+
+    listaIZQ= inventarioGeneral[:medio] #List from the left of the general inventory
+    listaDER=  inventarioGeneral[medio:] #list from the right
+
+    listaIZQ=reporteGlobal(listaIZQ) #recursive call
+    listaDER=reporteGlobal(listaDER)
+
+    return mezclado(listaIZQ, listaDER)
+
+def mezclado(listaIZQ, listaDER): 
+    """This method is the MERGE SORT organization part, Sort in ascending order by the value (COP) of the books from the previously divided lists"""
+    
+    listaReporteGlobal=[] #List of result
+    i=j=0
+
+    while i < len(listaIZQ) and j < len(listaDER): #Goes throught the lists
+         
+        if listaIZQ[i].precio <= listaDER[j].precio: #This arranges in ascending order if the price form the 'listaIZQ' is cheaper it will add the price to the 'reporteGlobal'
+            listaReporteGlobal.append(listaIZQ[i]) #adds the price
+            i += 1 #adds one to the index
+        
+        else:
+            listaReporteGlobal.append(listaDER[j]) #if the price on the right list has the lowest value, then it adds that one instead of the one on the left 
+            j+=1 #adds one to the index
+
+    listaReporteGlobal.extend(listaIZQ[i:]) #Adds the rest of the elements. add what remains from each list after comparing all possible elements
+    listaReporteGlobal.extend(listaDER[j:])
+
+    return listaReporteGlobal #Returns the result of the merge sort, the global report
+    
+
+    
