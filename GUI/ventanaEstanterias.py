@@ -24,7 +24,7 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
 from Classes.Estante import Estante
-from Classes.Estante import guardarEstanteFuncion
+from Data.ManejoListasMaestras import guardarEstanteFuncion
 from GUI import *
 
 #STAND WINDOW

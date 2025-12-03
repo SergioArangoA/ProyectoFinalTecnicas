@@ -9,6 +9,7 @@ if ROOT not in sys.path:
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data.ManejoListasMaestras import guardarLibro
+from Data.ManejoListasMaestras import buscarLibro
 
 
 
@@ -16,6 +17,7 @@ from Data.ManejoListasMaestras import guardarLibro
 def abrirLibros(ventanaPrincipal):
     """Opens the Book class CRUD"""
 
+    libroBuscado = None
 
     #METHODS
     def agregarLibro():
@@ -26,13 +28,18 @@ def abrirLibros(ventanaPrincipal):
         peso = float(CampoTextoPeso.get())
         precio = int(CampoTextoPrecio.get())
         cantidad = ventanaCantidadLibros(True) #Opens a new window that will ask the amount they want to add
-        while cantidad < 0:
-            ventanaError("La cantidad no puede ser un número negativo")
-            cantidad = ventanaCantidadLibros(True)
-        if cantidad > 0:
-            guardarLibro(isbn,titulo,autor,peso,precio,cantidad,0,[],None)
+        if isbn and titulo and autor and peso and precio and cantidad:
+            while cantidad < 0:
+                ventanaError("La cantidad no puede ser un número negativo")
+                cantidad = ventanaCantidadLibros(True)
+            if cantidad > 0:
+                guardarLibro(isbn,titulo,autor,peso,precio,cantidad,0,[],None)
+                imprimirLibro()
+            else:
+                ventanaError("No se agregó ningún libro porque la cantidad ingresada fue 0")
         else:
-            ventanaError("No se agregó ningún libro porque la cantidad ingresada fue 0")
+            ventanaError("Asegúrese de llenar todos los campos antes de agregar el libro")
+        
 
 
     def ventanaError(mensaje: str):
@@ -66,6 +73,73 @@ def abrirLibros(ventanaPrincipal):
         tk.Button(ventana, text="OK", command=confirmar).pack(pady=10)
         ventana.wait_window() #The program stops running until the window is closed
         return resultado["valor"]
+    
+    def imprimirLibro():
+        """Searchs the book and prints its data once it's found. The book is first searched by ISBN, then by title, then by author. If no book is found once the three searches are done, it shows an error message"""
+        libro = None
+        CampoImprimirISBN.config(state="normal")
+        CampoImprimirTitulo.config(state="normal")
+        CampoImprimirAutor.config(state="normal")
+        CampoImprimirPeso.config(state="normal")
+        CampoImprimirPrecio.config(state="normal")
+        CampoImprimirEnInventario.config(state="normal")
+        CampoImprimirPrestados.config(state="normal")
+        CampoImprimirEnEstantes.config(state="normal") #First makes all the print textboxes rewritable
+
+        CampoImprimirISBN.delete(0,tk.END)
+        CampoImprimirTitulo.delete(0,tk.END)
+        CampoImprimirAutor.delete(0,tk.END)
+        CampoImprimirPeso.delete(0,tk.END)
+        CampoImprimirPrecio.delete(0,tk.END)
+        CampoImprimirEnInventario.delete(0,tk.END)
+        CampoImprimirPrestados.delete(0,tk.END)
+        CampoImprimirEnEstantes.delete(0,tk.END) #Then deletes the previous text found in the textbox
+
+        #Then proceeds to search, first by ISBN, then by title, lastly by author
+
+        if CampoTextoISBN.get() or CampoTextoTitulo.get() or CampoTextoAutor.get():
+            #First checks that the user has at least filled one of the search requirements
+            if CampoTextoISBN.get():
+                libro = buscarLibro(CampoTextoISBN.get()) #Searchs the book by ISBN
+            
+            if not libro and CampoTextoTitulo.get(): #If the book hasn't been found and it can be searched by title, searches it again by title
+                #libro = buscarLibroTitulo
+                libro = libro
+            
+            if not libro and CampoTextoAutor.get(): #If the book hasn't been found and it can be searche by author, searches it again
+                #libro =  buscarLibroAutor
+                libro = libro
+            
+            if libro:
+                        
+                CampoImprimirISBN.insert(0,libro.isbn)
+                CampoImprimirTitulo.insert(0,libro.titulo)
+                CampoImprimirAutor.insert(0,libro.autor)
+                CampoImprimirPeso.insert(0,libro.peso)
+                CampoImprimirPrecio.insert(0,libro.precio)
+                CampoImprimirEnInventario.insert(0,libro.enInventario)
+                CampoImprimirPrestados.insert(0,libro.prestados)
+                CampoImprimirEnEstantes.insert(0,libro.estantes) #Prints the book data
+            
+            
+            if not libro:
+                ventanaError("No se encontró el libro que usted buscaba") #If the book still isn't found, tells the user that it couldn't be found
+        
+        else:
+            ventanaError("Por favor asegúrese de haber llenado al menos uno de los campos: ISBN, Titulo o Autor para poder realizar la búsqueda") 
+            #If the user didn't input any of the necesary fields for the search, tells him to do so
+        
+        CampoImprimirISBN.config(state="disabled")
+        CampoImprimirTitulo.config(state="disabled")
+        CampoImprimirAutor.config(state="disabled")
+        CampoImprimirPeso.config(state="disabled")
+        CampoImprimirPrecio.config(state="disabled")
+        CampoImprimirEnInventario.config(state="disabled")
+        CampoImprimirPrestados.config(state="disabled")
+        CampoImprimirEnEstantes.config(state="disabled") #Lastly, disables the print textboxes once again
+                
+
+
 
 
 
@@ -187,7 +261,7 @@ def abrirLibros(ventanaPrincipal):
 
     ModificarLibro= tk.Button(frameBotones, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
 
-    BuscarLibro=tk.Button(frameBotones, text="Buscar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
+    BuscarLibro=tk.Button(frameBotones, text="Buscar", width=20, command=lambda: imprimirLibro(), height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
 
     EliminarLibro= tk.Button(frameBotones, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
 
