@@ -301,6 +301,18 @@ def buscarEstante(id: str):
 
     return False #Returns false so the frontend can show a message that the shelf does not exist
 
+"""Shelf modification"""
+def modificarEstante(viejoID: str, nuevoID: str):
+    """Searches a shelf in the shelf list, and then modifies its id"""
+    from Data.DataManagement import cargarEstantes
+    from Data.DataManagement import guardarEstantes
+    listaEstantes = cargarEstantes() #Loads the shelfList
+    for estante in listaEstantes:
+        if estante.obtenerID() == viejoID:
+            estante.modificarID(nuevoID)
+            break
+    guardarEstantes(listaEstantes)
+
 """Shelf deletion"""
 def eliminarEstante (id: str):
     """This method receives the information form the searching function, it means the book exists
