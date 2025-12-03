@@ -14,6 +14,7 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data.DataManagement import guardarEstantes
 from Data.DataManagement import cargarEstantes
+from Data.ManejoListasMaestras import eliminarEstante
 from Classes.Estante import Estante
 from GUI import *
 # Agregar la carpeta raíz del proyecto al PYTHONPATH
@@ -30,27 +31,33 @@ from GUI import *
 #STAND WINDOW
 def abrirEstanterias(ventanaPrincipal):
     """Opens a window, which contains the Stand class CRUD."""
+    estante = None
 
     def abrirTablaLibros():
         """Opens a new window that contains the data of the books saved in the stand's inventory"""
-        listaLibros = list[Libro]
-        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
-        ventanaTabla.title("Libros en estante UwU")
+        if estante:
+            #before opening the window, checks that the shelf exists
+            ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+            ventanaTabla.title("Libros en estante UwU")
 
-        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PESO','PRECIO'),show= 'headings')#ttk.Treeview alows to place elements in a table
-        tabla.heading('ISBN',text='ISBN')
-        tabla.heading('TITULO',text='TÍTULO')
-        tabla.heading('AUTOR',text='AUTOR')
-        tabla.heading('PESO',text='PESO(Kg)')
-        tabla.heading('PRECIO',text='PRECIO')
-        tabla.pack()
+            tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PESO','PRECIO'),show= 'headings')#ttk.Treeview alows to place elements in a table
+            tabla.heading('ISBN',text='ISBN')
+            tabla.heading('TITULO',text='TÍTULO')
+            tabla.heading('AUTOR',text='AUTOR')
+            tabla.heading('PESO',text='PESO(Kg)')
+            tabla.heading('PRECIO',text='PRECIO')
+            tabla.pack()
 
-        for libro in listaLibros:
-            tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
-                                                    libro.titulo,
-                                                    libro.autor,
-                                                    str(libro.peso),
-                                                    str(libro.precio)))
+            for libro in estante.listaLibros:
+                tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
+                                                        libro.titulo,
+                                                        libro.autor,
+                                                        str(libro.peso),
+                                                        str(libro.precio)))
+        else:
+            #If there is no loaded shelf, shows an error message
+            ventanaError("Por favor busque primero un estante")
+
     def guardarEstanterias():
         """A method that read's the id in the stand's id textbox, then creates a stand with said id"""
         id = CampoTextoID.get()
@@ -65,6 +72,61 @@ def abrirEstanterias(ventanaPrincipal):
                campoImpresionID.config(state="disabled")
         else:
             ventanaError("Por favor ingrese un id para poder agregar el estante")
+    
+    def imprimirEstante():
+        """Searches the stand, and then prints its data"""
+        nonlocal estante #nonlocal makes the stand point to the same place that the "estante" from outside the method
+        estante = None
+        if CampoTextoID.get():
+            #If the ID has been placed, then the stand can get searched
+            estante = buscarEstante(CampoTextoID.get())
+            if estante:
+                #If the stand has been found, then it can be shown
+                campoImpresionID.config(state="normal")
+                campoImpresionID.delete(0,tk.END)
+                campoImpresionID.insert(0,estante.obtenerID())
+                campoImpresionID.config(state="disabled")
+
+                CampoTextoPeso.config(state="normal")
+                CampoTextoPeso.delete(0,tk.END)
+                CampoTextoPeso.insert(0,estante.obtenerPesoAcumulado())
+                CampoTextoPeso.config(state="disabled")
+
+                CampoTextoCantidadLibros.config(state="normal")
+                CampoTextoCantidadLibros.delete(0,tk.END)
+                CampoTextoCantidadLibros.insert(0,estante.obtenerCantidadDeLibros())
+                CampoTextoCantidadLibros.config(state="disabled")
+            
+            else:
+                ventanaError("No se encontró el estante que usted está buscando")
+        
+        else:
+            ventanaError("Por favor agregue un ID para poder buscar el estante")
+    
+    def borrarEstante():
+        """Deletes the shelf from the shelf list"""
+        id = campoImpresionID.get()
+        if id:
+            #Checks that a shelf has been prevously searched
+            eliminarEstante(id) #Deletes the shelf from the list of shelves
+            #Then Deletes all the data in the print textboxes so it shows the user that it was deleted
+            campoImpresionID.config(state="normal")
+            campoImpresionID.delete(0,tk.END)
+            campoImpresionID.config(state="disabled")
+
+            CampoTextoPeso.config(state="normal")
+            CampoTextoPeso.delete(0,tk.END)
+            CampoTextoPeso.config(state="disabled")
+
+            CampoTextoCantidadLibros.config(state="normal")
+            CampoTextoCantidadLibros.delete(0,tk.END)
+            CampoTextoCantidadLibros.config(state="disabled")
+        
+        else:
+            ventanaError("Por favor primero busque un libro antes de eliminarlo")
+
+        
+
 
     def ventanaError(mensaje: str):
         """A pop up window that will print the message sent"""
@@ -152,9 +214,9 @@ def abrirEstanterias(ventanaPrincipal):
     botonAgregar.grid(row=1,column=0,padx=10,pady=20,sticky="e")
     botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonModificar.grid(row=1,column=1,padx=10,pady=20,sticky="w")
-    botonBuscar = tk.Button(frameEstante,text="Buscar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonBuscar = tk.Button(frameEstante,text="Buscar", command=lambda: imprimirEstante(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonBuscar.grid(row=2,column=0,padx=10,pady=20,sticky="e")
-    botonEliminar = tk.Button(frameEstante,text="Eliminar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonEliminar = tk.Button(frameEstante,text="Eliminar",command=lambda: borrarEstante(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonEliminar.grid(row=2,column=1,padx=10,pady=20,sticky="w")
     botonListaEstantes = tk.Button(frameEstante,text="Abrir lista de estantes",command=lambda:abrirListaEstantes(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonListaEstantes.grid(row=3,column=0,padx=10,pady=20,columnspan=2)
@@ -166,10 +228,10 @@ def abrirEstanterias(ventanaPrincipal):
     campoImpresionID = tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2,state="disabled")
     campoImpresionID.grid(row=0,column=1,pady=10,sticky="w")
     
-    labelCantidadLibros = tk.Label(frameInfoEstanteActual,text="Cantidad de libros: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelCantidadLibros = tk.Label(frameInfoEstanteActual,text="Cantidad de libros: ",state="disabled", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
     labelCantidadLibros.grid(row=1,column=0,pady=10,sticky="e")
-    CampoTextoISBN= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
-    CampoTextoISBN.grid(row=1,column=1,pady=10,sticky="w")
+    CampoTextoCantidadLibros= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoCantidadLibros.grid(row=1,column=1,pady=10,sticky="w")
 
     labelPeso = tk.Label(frameInfoEstanteActual,text="Peso acumulado:", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
     labelPeso.grid(row=2,column=0,pady=10,sticky="e")
