@@ -73,6 +73,14 @@ initializing the necessary parameters, variables and starting the exploration fr
 
 calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
 
+--SEARCHES--
+-LINEAL SEARCH 
+    1. AUTHOR
+    busquedaPorAutor():This method goes through the general inventory and searches for the asked autor if the author is found is going
+    to create a list with all the found books of the same author, if it isn't found returns a empty list or false for each case
+    2. TITLE
+
+
 """
 inventarioOrdenado=cargarInventarioOrdenado
 inventarioGeneral=cargarInventarioGeneral
@@ -144,28 +152,54 @@ def buscarLibro(isbn: str):
     return False ##Returns false so the frontend can show a message that the book doesn't exist
 
 """Book deletion"""
-def eliminarlibro(isbn: str):
+def eliminarlibro(isbn: str, cantidad:int):
     """This method receives the information form the searching function, it means the book exists
     and can be found. Removes the object from the both Master Lists and returns True so the frontend can show a succes message"""
     
-    from Data.DataManagement import cargarInventarioGeneral, guardarInventarioGeneral
-    from Data.DataManagement import cargarInventarioOrdenado, guardarInventarioOrdenado
+    from Data.DataManagement import cargarInventarioGeneral
+    from Data.DataManagement import cargarInventarioOrdenado
 
-    inventarioGeneral=cargarInventarioGeneral()
+    inventarioGeneral=cargarInventarioGeneral() #Loads inventories
     inventarioOrdenado= cargarInventarioOrdenado()
 
+    libroInventarioGeneral = None
+    libroInventarioOrdenado = None
+
     libroBuscado= buscarLibro(isbn) #Calls the searching method
-    if libroBuscado: #The book exist and the searching function worked
-        if libroBuscado in inventarioGeneral: #If the book is in the inventory it will remove it
-            inventarioGeneral.remove(libroBuscado)
+    print(libroBuscado.enInventario)
 
-        if libroBuscado in inventarioOrdenado:
-            inventarioOrdenado.remove(libroBuscado)
+    if libroBuscado:
+        if libroBuscado.enInventario >= cantidad: #If the quantity to be eliminated fits on the quantity available it will eliminate that quantity
+            libroBuscado.enInventario-= cantidad #Eliminates the quantity
+            cantidad=0 #The book quantity already been eliminated, there's nothing left, the quantity to be eliminated is zero
 
-    guardarInventarioGeneral(inventarioGeneral) #Saves
-    guardarInventarioOrdenado(inventarioOrdenado)
+        
+        
+        else: #There are not enough books in the inventory to eliminated
+            cantidad-= libroBuscado.enInventario #It substracts the quantity that can be substracted
+            libroBuscado.enInventario= 0 #The inventory its zero because all the books has been eliminated
 
-    return True  # Returns True so the frontend can show a success message
+        if cantidad>0:#Still books to eliminate
+            if libroBuscado.prestados>= cantidad: #There is no books on the inventory but there are borrowed 
+                libroBuscado.prestados-= cantidad #Substracts the quantity from borrowed books
+                cantidad=0
+            else:
+                libroBuscado.prestados=0 #There is no borrowed books
+                cantidad=0 #No books will be eliminated
+        for libro in inventarioGeneral:
+            if libro.isbn == libroBuscado.isbn:
+                libroInventarioGeneral = libro
+        inventarioGeneral.remove(libroInventarioGeneral)
+        guardarInventarioGeneral(inventarioGeneral)
+
+        for libro in inventarioOrdenado:
+            if libro.isbn == libroBuscado.isbn:
+                libroInventarioOrdenado = libro
+        inventarioOrdenado.remove(libroInventarioOrdenado)
+        guardarInventarioOrdenado(inventarioOrdenado)
+        #This section updates the inventories
+        if libroBuscado.enInventario + libroBuscado.prestados > 0:
+            guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
 
 """SHELVES RELATED METHODS"""
 
@@ -301,9 +335,30 @@ def buscarUsuario(id: str):
         if usuario.id == idBuscado:  #Checks if it exists
             return usuario  #Returns the shelf object if found
         
-        return False #Returns false so the frontend can show a message that the shelf does not exist
+    return False #Returns false so the frontend can show a message that the shelf does not exist
 
+def eliminarUsuario(id: str):
+    """
+    Recibe el ID de un usuario y lo elimina de la lista de usuarios.
+    Mantiene las instancias de memoria correctas al modificar la lista cargada.
+    Devuelve True si se eliminó correctamente, False si el usuario no existe.
+    """
+    from Data.DataManagement import cargarUsuarios, guardarUsuarios
 
+    listaUsuarios = cargarUsuarios()
+
+    usuarioBuscado = None #Inicializates the var who is going to keep the found user
+    for usuario in listaUsuarios: #Goes throught the user list
+        if usuario.id == id: #If anyone of the id users is the same as the one the program is looking for
+            usuarioBuscado = usuario  #Saves the searched 
+            break  #The user has been found 
+
+    if usuarioBuscado: #verifies is the user has been found
+        listaUsuarios.remove(usuarioBuscado)  #Eliminates from the list the same instance from the found user assuring the delete of the right object
+        guardarUsuarios(listaUsuarios)  #List save
+        return True  #The user has been succesfully eliminated
+    else:
+        return False  #The user is not in the list
 
 """Stack and Queue Recursion"""
 
@@ -366,3 +421,26 @@ initializing the necessary parameters, variables and starting the exploration fr
         return calculoPesoPromedio(n+1, contador, pesoPromedio, normalizar)
                                    
     return calculoPesoPromedio(n, contador, pesoPromedio, normalizar)
+
+"""SEARCHES"""
+"Lineal Search"
+"AUTHOR"
+    
+def busquedaPorAutor(autor:str,librosAutor =[],  n=0):
+    """This method goes through the general inventory and searches for the asked autor if the author is found is going
+    to create a list with all the found books of the same author, if it isn't found returns a empty list or false for each case"""
+    inventarioGeneral= cargarInventarioGeneral()
+
+    if librosAutor is None: 
+        librosAutor=[]
+
+    if n>= len(inventarioGeneral):
+        if librosAutor:
+            return librosAutor
+        else:
+            return False
+    
+    if inventarioGeneral[n].autor== autor:
+        librosAutor.append(inventarioGeneral[n])
+
+    return busquedaPorAutor(autor,librosAutor,n+1 )
