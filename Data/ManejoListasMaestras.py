@@ -25,7 +25,7 @@ Methods:
 normalizar():This method helps later to compare strings without Upper case, comma, hyphen and dot
 
 --BOOK RELATED METHODS--
-    guardarLibro():This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added
+    guardarLibro() (INSERTION SORT):This method calls the Book attributes and creates a Book Object (if it doesn't exists) wich is going to be added
     to the organized inventory and the general inventory after being created, if the book exists
 
     buscarLibro(): This method searches for the book in the inventory and returns the book
@@ -51,7 +51,7 @@ normalizar():This method helps later to compare strings without Upper case, comm
     can show a succes message
 
     estanteriaDeficiente(): This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg
-
+    
  --USER RELATED METHODS--
     guardarUsuarioFuncion(): This method calls the User attributes and creates a User Object wich is going to be added to the Users List after being created
     if it doesn't exists. If the user exists is not going to be added
@@ -60,27 +60,40 @@ normalizar():This method helps later to compare strings without Upper case, comm
     If it does not exist, it returns False so the frontend can show the corresponding message
 
 --RECURSION--
--STACK
+    -STACK
 
-valorTotalAutor(): This function acts as a wrapper for the internal recursive function 'valorTotalMetodo()',
-initializing the necessary parameters and starting the exploration from the first item in the inventory
+        valorTotalAutor(): This function acts as a wrapper for the internal recursive function 'valorTotalMetodo()',
+        initializing the necessary parameters and starting the exploration from the first item in the inventory
 
-valorTotalMetodo():This method is the recursive technique, calculates the total value of all books written by a specific author
+        valorTotalMetodo():This method is the recursive technique, calculates the total value of all books written by a specific author
 
--QUEUE
-pesoPromedioAutor(): This function acts as a wrapper for the internal recursive function 'calculoPesoPromedio()',
-initializing the necessary parameters, variables and starting the exploration from the first item in the inventory
+    -QUEUE
+        pesoPromedioAutor(): This function acts as a wrapper for the internal recursive function 'calculoPesoPromedio()',
+        initializing the necessary parameters, variables and starting the exploration from the first item in the inventory
 
-calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
+        calculoPesoPromedio():This method is the recursive technique, calculates the average weight of a collection of books from a specific author
 
 --SEARCHES--
--LINEAL SEARCH 
-    1. AUTHOR
-    busquedaPorAutor():This method goes through the general inventory and searches for the asked autor if the author is found is going
-    to create a list with all the found books of the same author, if it isn't found returns a empty list or false for each case
-    2. TITLE
+    -LINEAL SEARCH 
+        1. AUTHOR
+            busquedaPorAutor():This method goes through the general inventory and searches (RECURSIVE METHOD) for the asked autor if the author is found is going
+            to create a list with all the found books of the same author, if it isn't found returns a empty list or false for each case
+        2. TITLE
+            busquedaporTitulo():This method goes through the general inventory and searches (RECURSIVE METHOD) for the asked title if the title is found is going
+            to create a list with all the found books of the same title, if it isn't found returns a empty list or false for each case
 
+    -BINARY SEARCH
+        busquedaBinISBN():This algorithm searches for the book's ISBN in the sorted inventory. 
+        According to binary search, if the ISBN being searched for is equal to the ISBN in the middle of the sorted inventory, 
+        it returns the position of that middle ISBN. 
+        If the ISBN is less than the one being searched for, it moves through the inventory to the right,
+        meaning the ascending part; if greater, it moves to the left, the descending part, and if it doesn't find anything, it returns -1, meaning the book was not found
 
+--MERGE SORT--
+    reporteGlobal(): This method is the MERGE SORT recursion part, this divides the general inventory list in two lists and it runs until the base case is met,
+    it means when the list has only one element, and then it calls the 'mezclado' method that organizes the data
+
+    mezclado(): This method is the MERGE SORT organization part, Sort in ascending order by the value (COP) of the books from the previously divided lists
 """
 inventarioOrdenado=cargarInventarioOrdenado
 inventarioGeneral=cargarInventarioGeneral
@@ -94,7 +107,7 @@ def normalizar(cadena):
 
 """BOOKLIST RELATED METHODS"""
 """List Filling"""
-#CANTIDAD VIENE DEL FRONTEND PREGUNTA CUANTOS LIBROS VA A AGREGAR Y SE LOS AGREGA AL ATRIBUTO DEL LIBRO 'EN INVENTARIO'
+"""(INSERTION SORT)"""
 def guardarLibro(isbn: str, titulo: str, autor: str, peso: float, precio: int, cantidad: int, prestados: int, 
     estantes: List[str], listaEspera: deque | None = None): #no se pone self. atributo pq ese self solo existe dentro de la clase libro
     """This method calls the Book attributes and creates a Book Object wich is going to be added to the organized inventory and the general inventory
@@ -164,15 +177,16 @@ def eliminarlibro(isbn: str, cantidad:int):
 
     libroInventarioGeneral = None
     libroInventarioOrdenado = None
-    posicionInventarioGeneral = -1
 
     libroBuscado= buscarLibro(isbn) #Calls the searching method
+    print(libroBuscado.enInventario)
 
     if libroBuscado:
         if libroBuscado.enInventario >= cantidad: #If the quantity to be eliminated fits on the quantity available it will eliminate that quantity
             libroBuscado.enInventario-= cantidad #Eliminates the quantity
             cantidad=0 #The book quantity already been eliminated, there's nothing left, the quantity to be eliminated is zero
 
+        
         
         else: #There are not enough books in the inventory to eliminated
             cantidad-= libroBuscado.enInventario #It substracts the quantity that can be substracted
@@ -187,80 +201,18 @@ def eliminarlibro(isbn: str, cantidad:int):
                 cantidad=0 #No books will be eliminated
         for libro in inventarioGeneral:
             if libro.isbn == libroBuscado.isbn:
-                libro.enInventario = libroBuscado.enInventario
-                libro.prestados = libroBuscado.prestados
-                break
+                libroInventarioGeneral = libro
+        inventarioGeneral.remove(libroInventarioGeneral)
         guardarInventarioGeneral(inventarioGeneral)
+
         for libro in inventarioOrdenado:
             if libro.isbn == libroBuscado.isbn:
-                libro.enInventario = libroBuscado.enInventario
-                libro.prestados = libroBuscado.prestados
+                libroInventarioOrdenado = libro
+        inventarioOrdenado.remove(libroInventarioOrdenado)
         guardarInventarioOrdenado(inventarioOrdenado)
-
-        if libroBuscado.enInventario + libroBuscado.prestados <= 0:
-            for libro in inventarioGeneral:
-                if libro.isbn == libroBuscado.isbn:
-                    libroInventarioGeneral = libro
-                    break
-            inventarioGeneral.remove(libroInventarioGeneral)
-            guardarInventarioGeneral(inventarioGeneral)
-            for libro in inventarioOrdenado:
-                if libro.isbn == libroBuscado.isbn:
-                    libroInventarioOrdenado = libro
-                    break
-            inventarioOrdenado.remove(libroInventarioOrdenado)
-            guardarInventarioOrdenado(inventarioOrdenado)
-
-            
-
-def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int):
-    """This method updates the data of a book, by removing it from both inventories then re-adding it with the new atributes"""
-    from Data.DataManagement import cargarInventarioGeneral
-    from Data.DataManagement import cargarInventarioOrdenado
-
-    inventarioGeneral=cargarInventarioGeneral() #Loads inventories
-    inventarioOrdenado= cargarInventarioOrdenado()
-
-    libroInventarioGeneral = None
-    libroInventarioOrdenado = None
-    posicionInventarioGeneral = [-1]
-
-    libroBuscado= buscarLibro(ISBNanterior) #Calls the searching method        
-    for i in range(0,len(inventarioGeneral)):
-        if inventarioGeneral[i].isbn == ISBNanterior:
-            posicionInventarioGeneral = i #Saves the position of the book
-            break
-
-    for libro in inventarioOrdenado: #Looks for the book on each inventory to remove it
-        if libro.isbn == ISBNanterior:
-            libroInventarioOrdenado = libro #leaves the loop once its found
-            break
-    inventarioOrdenado.remove(libroInventarioOrdenado) #Removes the book from the ordered inventory
-    guardarInventarioOrdenado(inventarioOrdenado) #Saves the change made
-    if isbn:
-        libroBuscado.isbn = isbn
-    
-    if titulo:
-        libroBuscado.titulo = titulo
-    
-    if autor:
-        libroBuscado.autor = autor
-    
-    if peso:
-        libroBuscado.peso = peso
-    
-    if precio:
-        libroBuscado.precio = precio
-
-    #This section updates the inventories
-    guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
-    inventarioGeneral = cargarInventarioGeneral()
-    inventarioGeneral.pop() #Because the new book was moved to the end, it's popped to avoid duplication
-    #At last, the book in that position is modified, and then the inventory is saved
-    inventarioGeneral[posicionInventarioGeneral] = Libro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
-    guardarInventarioGeneral(inventarioGeneral)
-
-      
+        #This section updates the inventories
+        if libroBuscado.enInventario + libroBuscado.prestados > 0:
+            guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
 
 """SHELVES RELATED METHODS"""
 
@@ -300,18 +252,6 @@ def buscarEstante(id: str):
             return estante  #Returns the shelf object if found
 
     return False #Returns false so the frontend can show a message that the shelf does not exist
-
-"""Shelf modification"""
-def modificarEstante(viejoID: str, nuevoID: str):
-    """Searches a shelf in the shelf list, and then modifies its id"""
-    from Data.DataManagement import cargarEstantes
-    from Data.DataManagement import guardarEstantes
-    listaEstantes = cargarEstantes() #Loads the shelfList
-    for estante in listaEstantes:
-        if estante.obtenerID() == viejoID:
-            estante.modificarID(nuevoID)
-            break
-    guardarEstantes(listaEstantes)
 
 """Shelf deletion"""
 def eliminarEstante (id: str):
@@ -496,43 +436,114 @@ initializing the necessary parameters, variables and starting the exploration fr
     return calculoPesoPromedio(n, contador, pesoPromedio, normalizar)
 
 """SEARCHES"""
-"Lineal Search"
-"AUTHOR"
+"""Lineal Search"""
+"""AUTHOR"""
     
 def busquedaPorAutor(autor:str,librosAutor =[],  n=0):
-    """This method goes through the general inventory and searches for the asked autor if the author is found is going
+    """This method goes through the general inventory and searches (RECURSIVE METHOD) for the asked autor if the author is found is going
     to create a list with all the found books of the same author, if it isn't found returns a empty list or false for each case"""
-    inventarioGeneral= cargarInventarioGeneral()
+    inventarioGeneral= cargarInventarioGeneral() #Loads the inventory
 
-    if librosAutor is None: 
+    if librosAutor is None: #If 'librosAutor' is nothing, its going to be an empty list
         librosAutor=[]
-
-    if n>= len(inventarioGeneral):
-        if librosAutor:
+ 
+    if n>= len(inventarioGeneral): #The index reached the end of the list
+        if librosAutor: #If 'librosAutor' has something
             return librosAutor
         else:
-            return False
+            return False #'librosAutor' doesn't have anything
     
-    if inventarioGeneral[n].autor== autor:
-        librosAutor.append(inventarioGeneral[n])
+    if inventarioGeneral[n].autor== autor: #the author has been found
+        librosAutor.append(inventarioGeneral[n]) #Adds it to the list of books with the same author
 
-    return busquedaPorAutor(autor,librosAutor,n+1 )
+    return busquedaPorAutor(autor,librosAutor,n+1 ) #Recursive call
+
+"""TITLE"""
 
 def busquedaporTitulo(titulo:str, librosTitulo=[], n=0):
-    """This method goes through the general inventory and searches for the asked title if the title is found is going
+    """This method goes through the general inventory and searches (RECURSIVE METHOD) for the asked title if the title is found is going
     to create a list with all the found books of the same title, if it isn't found returns a empty list or false for each case"""
-    inventarioGeneral= cargarInventarioGeneral()
+    inventarioGeneral= cargarInventarioGeneral() #Loads the inventory
 
-    if librosTitulo is None: 
+    if librosTitulo is None: #If 'librosTitulo' is nothing, its going to be an empty list
         librosTitulo=[]
 
-    if n>= len(inventarioGeneral):
-        if librosTitulo:
+    if n>= len(inventarioGeneral):#The index reached the end of the list
+        if librosTitulo:#If 'librosTitulo' has something
             return librosTitulo
         else:
-            return False
+            return False #'librosTitulo' doesn't have anything
     
-    if inventarioGeneral[n].titulo== titulo:
-        librosTitulo.append(inventarioGeneral[n])
+    if inventarioGeneral[n].titulo== titulo: #the title has been found
+        librosTitulo.append(inventarioGeneral[n]) #Adds it to the list of books with the same title
 
-    return busquedaporTitulo(titulo,librosTitulo,n+1 )
+    return busquedaporTitulo(titulo,librosTitulo,n+1 ) #Recursive call
+
+"""Binary Search"""
+def busquedaBinISBN(inventarioOrdenado, isbnBuscado:str):
+    """This algorithm searches for the book's ISBN in the sorted inventory. 
+    According to binary search, if the ISBN being searched for is equal to the ISBN in the middle of the sorted inventory, 
+    it returns the position of that middle ISBN. 
+    If the ISBN is less than the one being searched for, it moves through the inventory to the right,
+    meaning the ascending part; if greater, it moves to the left, the descending part, and if it doesn't find anything, it returns -1, meaning the book was not found."""
+    inicio=0
+    final=len(inventarioOrdenado)-1
+    
+    while inicio<= final: #mientras que se recorra correctamente el ciclo
+        mitad=(inicio+final)//2 #Half MUST be an integer and it can't be done with the length of the list because that will never change. Each iteration must take the current range, not that of the whole list.
+        isbnAct= inventarioOrdenado[mitad].isbn #The current ISBN will be whatever ISBN that is in the middle of the inventory
+
+        if isbnAct== isbnBuscado: #If the current ISBN is the same as the one in the middle, then it returns it
+            return mitad #returns THE POSITION, because in this case the data doesn't matter, but the point at which it changes does
+        
+        elif isbnAct< isbnBuscado:
+            inicio=mitad+1 #split the list, look to the right, and of course start one position ahead of the middle one because it was already tested before
+
+        else: 
+            final= mitad-1 #split the list and search in the part with the smaller elements and -1 because it already tried the value that was in the middle
+    
+    return -1 #Not found
+
+"""MERGE SORT"""
+
+def reporteGlobal(inventarioGeneralLista):
+    """This method is the MERGE SORT recursion part, this divides the general inventory list in two lists and it runs until the base case is met,
+     it means when the list has only one element, and then it calls the 'mezclado' method that organizes the data """
+
+    if len(inventarioGeneralLista) <= 1: #Base case when there is only one element on the list
+        return inventarioGeneralLista #returns the one element list
+    
+    largo=len(inventarioGeneral)-1 
+    medio=largo//2
+
+    listaIZQ= inventarioGeneral[:medio] #List from the left of the general inventory
+    listaDER=  inventarioGeneral[medio:] #list from the right
+
+    listaIZQ=reporteGlobal(listaIZQ) #recursive call
+    listaDER=reporteGlobal(listaDER)
+
+    return mezclado(listaIZQ, listaDER)
+
+def mezclado(listaIZQ, listaDER): 
+    """This method is the MERGE SORT organization part, Sort in ascending order by the value (COP) of the books from the previously divided lists"""
+    
+    listaReporteGlobal=[] #List of result
+    i=j=0
+
+    while i < len(listaIZQ) and j < len(listaDER): #Goes throught the lists
+         
+        if listaIZQ[i].precio <= listaDER[j].precio: #This arranges in ascending order if the price form the 'listaIZQ' is cheaper it will add the price to the 'reporteGlobal'
+            listaReporteGlobal.append(listaIZQ[i]) #adds the price
+            i += 1 #adds one to the index
+        
+        else:
+            listaReporteGlobal.append(listaDER[j]) #if the price on the right list has the lowest value, then it adds that one instead of the one on the left 
+            j+=1 #adds one to the index
+
+    listaReporteGlobal.extend(listaIZQ[i:]) #Adds the rest of the elements. add what remains from each list after comparing all possible elements
+    listaReporteGlobal.extend(listaDER[j:])
+
+    return listaReporteGlobal #Returns the result of the merge sort, the global report
+    
+
+    
