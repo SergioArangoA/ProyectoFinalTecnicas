@@ -8,7 +8,6 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
-from Data import *
 from Classes.Usuario import Usuario
 from collections import deque
 class Libro:

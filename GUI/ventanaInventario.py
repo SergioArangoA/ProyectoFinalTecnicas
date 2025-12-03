@@ -97,8 +97,8 @@ def abrirInventario(ventanaPrincipal):
     InventarioOrdenado= tk.Button(frameBotones, text="Inventario ordenado",command=lambda: abrirTablaInventario(cargarInventarioOrdenado(),"Inventario ordenado"), width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
     InventarioOrdenado.grid(row=0,column=1,sticky="nsew",padx=20)
 
-    historialPrestamos = tk.Button(frameBotones,text="Historal de préstamos",width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
-    historialPrestamos.grid(row=0,column=2,sticky="nsew",padx=20)
+    botonReporteGlobal = tk.Button(frameBotones,text="Reporte global",width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
+    botonReporteGlobal.grid(row=0,column=2,sticky="nsew",padx=20)
 
     #AUTHOR'S BOOKS STATISTICS
     
