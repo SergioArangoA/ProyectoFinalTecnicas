@@ -164,16 +164,15 @@ def eliminarlibro(isbn: str, cantidad:int):
 
     libroInventarioGeneral = None
     libroInventarioOrdenado = None
+    posicionInventarioGeneral = -1
 
     libroBuscado= buscarLibro(isbn) #Calls the searching method
-    print(libroBuscado.enInventario)
 
     if libroBuscado:
         if libroBuscado.enInventario >= cantidad: #If the quantity to be eliminated fits on the quantity available it will eliminate that quantity
             libroBuscado.enInventario-= cantidad #Eliminates the quantity
             cantidad=0 #The book quantity already been eliminated, there's nothing left, the quantity to be eliminated is zero
 
-        
         
         else: #There are not enough books in the inventory to eliminated
             cantidad-= libroBuscado.enInventario #It substracts the quantity that can be substracted
@@ -188,18 +187,80 @@ def eliminarlibro(isbn: str, cantidad:int):
                 cantidad=0 #No books will be eliminated
         for libro in inventarioGeneral:
             if libro.isbn == libroBuscado.isbn:
-                libroInventarioGeneral = libro
-        inventarioGeneral.remove(libroInventarioGeneral)
+                libro.enInventario = libroBuscado.enInventario
+                libro.prestados = libroBuscado.prestados
+                break
         guardarInventarioGeneral(inventarioGeneral)
-
         for libro in inventarioOrdenado:
             if libro.isbn == libroBuscado.isbn:
-                libroInventarioOrdenado = libro
-        inventarioOrdenado.remove(libroInventarioOrdenado)
+                libro.enInventario = libroBuscado.enInventario
+                libro.prestados = libroBuscado.prestados
         guardarInventarioOrdenado(inventarioOrdenado)
-        #This section updates the inventories
-        if libroBuscado.enInventario + libroBuscado.prestados > 0:
-            guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
+
+        if libroBuscado.enInventario + libroBuscado.prestados <= 0:
+            for libro in inventarioGeneral:
+                if libro.isbn == libroBuscado.isbn:
+                    libroInventarioGeneral = libro
+                    break
+            inventarioGeneral.remove(libroInventarioGeneral)
+            guardarInventarioGeneral(inventarioGeneral)
+            for libro in inventarioOrdenado:
+                if libro.isbn == libroBuscado.isbn:
+                    libroInventarioOrdenado = libro
+                    break
+            inventarioOrdenado.remove(libroInventarioOrdenado)
+            guardarInventarioOrdenado(inventarioOrdenado)
+
+            
+
+def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int):
+    """This method updates the data of a book, by removing it from both inventories then re-adding it with the new atributes"""
+    from Data.DataManagement import cargarInventarioGeneral
+    from Data.DataManagement import cargarInventarioOrdenado
+
+    inventarioGeneral=cargarInventarioGeneral() #Loads inventories
+    inventarioOrdenado= cargarInventarioOrdenado()
+
+    libroInventarioGeneral = None
+    libroInventarioOrdenado = None
+    posicionInventarioGeneral = [-1]
+
+    libroBuscado= buscarLibro(ISBNanterior) #Calls the searching method        
+    for i in range(0,len(inventarioGeneral)):
+        if inventarioGeneral[i].isbn == ISBNanterior:
+            posicionInventarioGeneral = i #Saves the position of the book
+            break
+
+    for libro in inventarioOrdenado: #Looks for the book on each inventory to remove it
+        if libro.isbn == ISBNanterior:
+            libroInventarioOrdenado = libro #leaves the loop once its found
+            break
+    inventarioOrdenado.remove(libroInventarioOrdenado) #Removes the book from the ordered inventory
+    guardarInventarioOrdenado(inventarioOrdenado) #Saves the change made
+    if isbn:
+        libroBuscado.isbn = isbn
+    
+    if titulo:
+        libroBuscado.titulo = titulo
+    
+    if autor:
+        libroBuscado.autor = autor
+    
+    if peso:
+        libroBuscado.peso = peso
+    
+    if precio:
+        libroBuscado.precio = precio
+
+    #This section updates the inventories
+    guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
+    inventarioGeneral = cargarInventarioGeneral()
+    inventarioGeneral.pop() #Because the new book was moved to the end, it's popped to avoid duplication
+    #At last, the book in that position is modified, and then the inventory is saved
+    inventarioGeneral[posicionInventarioGeneral] = Libro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
+    guardarInventarioGeneral(inventarioGeneral)
+
+      
 
 """SHELVES RELATED METHODS"""
 

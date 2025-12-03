@@ -8,8 +8,7 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
-from Data.ManejoListasMaestras import guardarLibro
-from Data.ManejoListasMaestras import buscarLibro
+from Data.ManejoListasMaestras import guardarLibro, buscarLibro, eliminarlibro, modificarLibro
 
 
 
@@ -23,12 +22,17 @@ def abrirLibros(ventanaPrincipal):
     def agregarLibro():
         """Reads the data in the textboxes to add a book. Also opens a new window that will ask the user the amount of books they want to add"""
         isbn = CampoTextoISBN.get()
-        titulo = CampoTextoTitulo.get()
-        autor = CampoTextoAutor.get()
-        peso = float(CampoTextoPeso.get())
-        precio = int(CampoTextoPrecio.get())
+        titulo= None
+        autor = None
+        peso = None
+        precio = None
+        if not buscarLibro(isbn): #First looks for a book, if it can't be found, reads the other textboxes data to add it
+            titulo = CampoTextoTitulo.get()
+            autor = CampoTextoAutor.get()
+            peso = float(CampoTextoPeso.get())
+            precio = int(CampoTextoPrecio.get())
         cantidad = ventanaCantidadLibros(True) #Opens a new window that will ask the amount they want to add
-        if isbn and titulo and autor and peso and precio and cantidad:
+        if isbn and titulo and autor and peso and precio and cantidad or buscarLibro(isbn):
             #If the user filled every box, proceeds to do the verifications before finally adding the book
             while cantidad < 0:
                 ventanaError("La cantidad no puede ser un número negativo")
@@ -41,7 +45,66 @@ def abrirLibros(ventanaPrincipal):
         else:
             #If the user didn't fill all the boxes, shows him an error
             ventanaError("Asegúrese de llenar todos los campos antes de agregar el libro")
+    
+    def borrarLibros():
+        """Reads the isbn in the print isbn box, and then proceeds to ask the user for an amount of said book to delete and lastly deletes said amount"""
+        isbn = CampoImprimirISBN.get() #Checks that the user has searched for a book before doing anything else
+
+        if not isbn:
+            ventanaError("Por favor primero busque un libro antes de eliminarlo") #If there wasn't a previously searched book, shows the user an error
+
+        if isbn:
+            cantidad = ventanaCantidadLibros(False)
+            while cantidad < 0: 
+                ventanaError("Por favor ingrese una cantidad mayor o igual a cero") #The amount of books added must be positive
+                cantidad = ventanaCantidadLibros(False) #Will keep showing the amount tab until a valid amount is inputted
+            
+            eliminarlibro(isbn, cantidad)
+            if cantidad == 0: #Tell the user that the amount was 0
+                ventanaError("No se eliminó ningún libro porque la cantidad ingresada fue cero")
+            libro = buscarLibro(isbn) #Then searches the book after the amount was changed
+            if libro: #If the book is found
+                texto = CampoTextoISBN.get() #Saves the text in the input box
+                CampoTextoISBN.delete(0,tk.END)
+                CampoTextoISBN.insert(0,isbn) #Inserts the old isbn to search for the book
+                imprimirLibro() #Prints the book data
+                CampoTextoISBN.delete(0,tk.END)
+                CampoTextoISBN.insert(0,texto) #then returns the old text to the input box so the user doesn't notice any changes
+            else:  #If the book isn't found, it means that it was removed from the invetory
+                ventana = tk.Toplevel(bg= "#EAE4D5")
+                label = tk.Label(ventana, text="El libro ha sido eliminado del inventario",font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
+                label.pack()
+
+    def modificarDatosLibro():
+        if CampoImprimirISBN.get():
+            ISBNanterior = CampoImprimirISBN.get()
+            isbn = None
+            titulo = None
+            autor = None
+            peso = None
+            precio = None
+            if CampoTextoISBN.get():
+                isbn = CampoTextoISBN.get()
+            if CampoTextoTitulo.get():
+                titulo = CampoTextoTitulo.get()
+            if CampoTextoAutor.get():
+                autor = CampoTextoAutor.get()
+            if CampoTextoPeso.get():
+                peso = CampoTextoPeso.get()
+            if CampoImprimirPrecio.get():
+                precio = CampoTextoPrecio.get()
+            modificarLibro(ISBNanterior,isbn,titulo,autor,peso,precio)
+            if isbn:
+                imprimirLibro()
+            else:
+                CampoTextoISBN.insert(0,ISBNanterior)
+                imprimirLibro()
+                CampoTextoISBN.delete(0,tk.END)
+
         
+        else:
+            ventanaError("Por favor busque un libro antes de realizar modificaciones")
+
 
 
     def ventanaError(mensaje: str):
@@ -51,15 +114,21 @@ def abrirLibros(ventanaPrincipal):
         labelError = tk.Label(ventana, text=mensaje,font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
         labelError.pack()
     
-    def ventanaCantidadLibros(resultado: bool):
+    def ventanaCantidadLibros(agregar: bool):
         """A window that will ask the amount of books that the user will either want to add or remove. Will return the amount inserted by the user"""
         ventana = tk.Toplevel()
         ventana.title("Cantidad de libros")
         ventana.geometry("350x150")
         ventana.grab_set()  #Makes the user only able to interact with this window until it closes
+        tk.Label(ventana, text="").pack(pady=10)
+        mensaje = ""
+        if agregar:
+            mensaje = "Cantidad a agregar: "
+        
+        else:
+            mensaje = "Cantidad a eliminar: "
 
-        tk.Label(ventana, text="Cantidad:").pack(pady=10)
-
+        tk.Label(ventana, text=mensaje).pack(pady=10)
         campo = tk.Entry(ventana)
         campo.pack()
         resultado = {"valor":0} # The amount must be saved in a dictionary because they are mutable
@@ -261,11 +330,11 @@ def abrirLibros(ventanaPrincipal):
 
     AgregarLibro= tk.Button(frameBotones,command=agregarLibro, text="Agregar", width=20, height=2,font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=0, padx=10, pady=20,sticky="nsew")
 
-    ModificarLibro= tk.Button(frameBotones, text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
+    ModificarLibro= tk.Button(frameBotones,command = lambda: modificarDatosLibro(), text="Modificar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=1, padx=10, pady=20,sticky="nsew")
 
     BuscarLibro=tk.Button(frameBotones, text="Buscar", width=20, command=lambda: imprimirLibro(), height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
 
-    EliminarLibro= tk.Button(frameBotones, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
+    EliminarLibro= tk.Button(frameBotones,command=lambda: borrarLibros(), text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
 
     #RETURN BUTTON
     volver=tk.Button(frameBotones, text="VOLVER AL MENÚ", command=lambda: [ventanaLibros.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=1, column=0, padx=10, pady=20)
