@@ -291,10 +291,7 @@ def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: f
 
     for i in range(0,len(inventarioGeneral)): #Loop to find the index of the book in general inventory
         if inventarioGeneral[i].isbn.strip("-") == ISBNanterior.strip("-"):
-            print(str(inventarioGeneral[i].precio))
-            print(str(libroBuscado.precio))
-            inventarioGeneral[i] = libroBuscado
-            print(str(inventarioGeneral[i].precio)) #Replaces the book
+            inventarioGeneral[i] = libroBuscado #Replaces the book
             break
     guardarInventarioGeneral(inventarioGeneral) #Saves the general inventory
     indiceInventarioOrdenado = 0
@@ -754,14 +751,14 @@ def busquedaBinISBN(inventarioOrdenado, isbnBuscado:str):
 
 """MERGE SORT"""
 
-def reporteGlobal(inventarioGeneralLista):
+def reporteGlobal(inventarioGeneral):
     """This method is the MERGE SORT recursion part, this divides the general inventory list in two lists and it runs until the base case is met,
      it means when the list has only one element, and then it calls the 'mezclado' method that organizes the data """
 
-    if len(inventarioGeneralLista) <= 1: #Base case when there is only one element on the list
-        return inventarioGeneralLista #returns the one element list
+    if len(inventarioGeneral) <= 1: #Base case when there is only one element on the list
+        return inventarioGeneral #returns the one element list
     
-    largo=len(inventarioGeneral)-1 
+    largo=len(inventarioGeneral)
     medio=largo//2
 
     listaIZQ= inventarioGeneral[:medio] #List from the left of the general inventory
