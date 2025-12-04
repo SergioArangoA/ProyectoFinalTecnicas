@@ -60,7 +60,6 @@ def abrirInventario(ventanaPrincipal):
             tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
                                                     libro.titulo,
                                                     libro.autor,
-                                                    str(libro.peso),
                                                     str(libro.precio))) #Each one of the book parameters that will be shown in the table
     
 
