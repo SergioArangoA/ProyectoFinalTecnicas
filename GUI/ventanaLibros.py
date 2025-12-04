@@ -66,7 +66,7 @@ def abrirLibros(ventanaPrincipal):
                 ventanaError("No se eliminó ningún libro porque la cantidad ingresada fue cero")
             inventario = cargarInventarioOrdenado()
             indice = busquedaBinISBN(cargarInventarioOrdenado(),isbn)
-            libro = inventario[inventario,indice] #Then searches the book after the amount was changed
+            libro = inventario[indice] #Then searches the book after the amount was changed
             if libro: #If the book is found
                 texto = CampoTextoISBN.get() #Saves the text in the input box
                 CampoTextoISBN.delete(0,tk.END)

@@ -45,8 +45,11 @@ class Libro:
         self.precio = precio
         self.enInventario = enInventario
         self.prestados = prestados
-        self.listaEspera= listaEspera if listaEspera is not None else deque()
-        self.estantes: list[str]= []
+        self.listaEspera = deque()
+        if listaEspera:
+            for usuario in listaEspera:
+                self.listaEspera.append(Usuario(usuario["id"],usuario["historialPrestados"]))
+        self.estantes = estantes
         #self.atributo = atributo 
         
     def imprimirDatos(self):
@@ -61,9 +64,12 @@ class Libro:
     def libroADict(self):
         """This method converts an object book into a dictionary so it can be saved in JSON"""
         #listaEspera is converted from a deque to a  list for the JSON
-
+        listaEsperaDiccionarios = []
+        for usuario in self.listaEspera:
+            listaEsperaDiccionarios.append(usuario.usuarioADiccionario())
+             
         return ({"isbn":self.isbn,"titulo": self.titulo,"autor": self.autor, "peso": self.peso,"precio": self.precio,
-                "enInventario": self.enInventario, "prestados": self.prestados, "listaEspera": list(self.listaEspera), 
+                "enInventario": self.enInventario, "prestados": self.prestados, "listaEspera": list(listaEsperaDiccionarios), 
                 "estantes": self.estantes
             })
     
