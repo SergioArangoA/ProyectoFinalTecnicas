@@ -31,82 +31,102 @@ class Usuario:
         diccionarioUsuario = {"id":self.id,"historialPrestados":list(self.historialPrestados)}
         return diccionarioUsuario
     
-    def agregarReserva(self,isbn: str):
-        """Adds the reservation to the user's reservation history"""
-        from Data.DataManagement import cargarInventarioOrdenado
+    def agregarReserva(self, isbn: str):
+        """
+        Attempt to borrow a book for the user.
+        Handles inventory, waitlist, estantes, and history updates.
+        """
+        from Data.DataManagement import cargarInventarioOrdenado, cargarEstantes #Import necessary functions and classes
         from Classes.Libro import Libro
-        from Data.ManejoListasMaestras import busquedaBinISBN, modificarLibro, modificarUsuario
-        inventario = cargarInventarioOrdenado()
-        indice = busquedaBinISBN(inventario,isbn)
+        from Data.ManejoListasMaestras import busquedaBinISBN, modificarLibro, modificarUsuario, eliminarLibroEstante
+
+        
+        inventario = cargarInventarioOrdenado() #Load ordered inventory and shelf list
+        listaEstantes = cargarEstantes()
+
+        indice = busquedaBinISBN(inventario, isbn) #Find book by ISBN
         libro: Libro = inventario[indice]
-        primeroListaEspera = False
-        if libro.listaEspera:
-            if libro.listaEspera[0].id == self.id:
-                primeroListaEspera = True
-            
-        
-        if libro.enInventario > len(libro.listaEspera) or (libro.enInventario > 0 and primeroListaEspera): #The book can be borrowed only if there are enough books or if the user is at the top of the waitlist
-            if libro.enInventario > len(libro.listaEspera)  or libro.listaEspera[0].id == self.id:
-                libro.enInventario -= 1
-                libro.prestados += 1
-                self.historialPrestados.append({"fecha":date.today().strftime("%Y-%m-%d"),"ISBN":libro.isbn,"retornado":False})
-                ventana = tk.Toplevel(bg= "#EAE4D5")
-                ventana.title("Anuncio")
-                labelAnuncio = tk.Label(ventana, text="El libro se le puede prestar al usuario, valor a pagar: " + str(libro.precio),font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
-                labelAnuncio.pack()
-            if libro.enInventario < len(libro.listaEspera):
-                ventana = tk.Toplevel(bg= "#EAE4D5")
-                ventana.title("Anuncio")
-                labelAnuncio = tk.Label(ventana, text="Antes de poder prestar el libro se debe vaciar la lista de espera. El libro no se pudo prestar " + str(libro.precio),font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
-                
-            if primeroListaEspera:
-                libro.listaEspera.popleft() #Removes the user from the waitlist if they're at the top
-        
+
+
+        primeroListaEspera = libro.listaEspera and len(libro.listaEspera) > 0 and libro.listaEspera[0] == self.id #Check if user is first in the waitlist (safe check for empty list)
+
+        if libro.enInventario > len(libro.listaEspera) or primeroListaEspera: #Check if book can be borrowed (enough inventory or user is first in waitlist)
+            #Remove book from all shelves before borrow
+
+            for estanteID in libro.estantes[:]:  #Iterate over a copy to avoid modification issues
+                eliminarLibroEstante(libro, estanteID, listaEstantes)
+
+            libro.enInventario -= 1 #Update book inventory and borrowed count
+            libro.prestados += 1
+
+            self.historialPrestados.append({   #Saves the borrowing in user's history
+                "fecha": date.today().strftime("%Y-%m-%d"),
+                "ISBN": libro.isbn,
+                "retornado": False
+            })
+
+            if primeroListaEspera: #Remove user from waitlist if they were first
+                libro.listaEspera.popleft()
+
         else:
-            libro.listaEspera.append(self)
-            ventana = tk.Toplevel(bg= "#EAE4D5")
-            ventana.title("Anuncio")
-            labelAnuncio = tk.Label(ventana, text="Se ha agregado al usuario a la lista de espera" + str(libro.precio),font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
-            labelAnuncio.pack()
-        print("enInventario a guardar:", libro.enInventario)
-        print("prestados a guardar:", libro.prestados)
-        modificarUsuario(self.id,self.id,self.historialPrestados) #At last, saves the changes made
-        modificarLibro(libro.isbn,libro.isbn,libro.titulo,libro.autor,libro.peso,libro.precio,libro.enInventario,libro.prestados,libro.listaEspera)
-    
-    def retornarLibro(self,isbn: str):
-        """Returns the book to the inventory"""
+            libro.listaEspera.append(self.id)  #Add user ID to waitlist if book cannot be borrowed
+
+        #Save changes to user and book in persistent storage
+        modificarUsuario(self.id, self.id, self.historialPrestados)
+        modificarLibro(libro.isbn , libro.isbn, libro.titulo, libro.autor, libro.peso, #first isbn: old isbn second: new isbn
+            libro.precio, libro.enInventario, libro.prestados, libro.listaEspera)
+
+
+    def retornarLibro(self, isbn: str):
+        """Return a borrowed book, update inventory, and automatically lend to next user in waitlist.
+        """
         from Classes.Libro import Libro
-        from Data.ManejoListasMaestras import busquedaBinISBN,modificarLibro,modificarUsuario
+        from Data.ManejoListasMaestras import busquedaBinISBN, modificarLibro, modificarUsuario, buscarUsuario
         from Data.DataManagement import cargarInventarioOrdenado
+
         inventario = cargarInventarioOrdenado()
-        indice = busquedaBinISBN(inventario,isbn)
+
+        indice = busquedaBinISBN(inventario, isbn)
         libro: Libro = inventario[indice]
-        encontrado = False
-        for prestado in self.historialPrestados:
-            if prestado["ISBN"] == libro.isbn and prestado["retornado"] == False:
-                prestado["retornado"] = True
+
+        encontrado = False #Flag var
+
+        for prestado in self.historialPrestados: #Find the borrowing record in user's history
+            if prestado["ISBN"] == libro.isbn and not prestado["retornado"]:
+                prestado["retornado"] = True  #Mark as returned
                 encontrado = True
-        if not encontrado: #Tells the user that the book hadn't been borrowed to that user
-            ventana = tk.Toplevel(bg= "#EAE4D5")
-            ventana.title("Anuncio")
-            labelAnuncio = tk.Label(ventana, text="El libro no se le había prestado al usuario" + str(libro.precio),font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
-            labelAnuncio.pack()
-        if encontrado:
-            libro.enInventario += 1
-            libro.prestados -= 1
-            ventana = tk.Toplevel(bg= "#EAE4D5") #Makes the related modifications to the book
-            ventana.title("Anuncio")
-            labelAnuncio = tk.Label(ventana, text="El libro ha sido retornado" + str(libro.precio),font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
-            labelAnuncio.pack()
-            if len(libro.listaEspera) > 0:
-                ventana = tk.Toplevel(bg= "#EAE4D5")
-                ventana.title("Anuncio")
-                labelAnuncio = tk.Label(ventana, text="El próximo usuario en la lista de espera es: " + libro.listaEspera[0].id + str(libro.precio),font=("Palatino Linotype", 14, "normal"), bg="#EAE4D5")
-                labelAnuncio.pack()
+                break
 
-        modificarUsuario(self.id,self.id,self.historialPrestados)
-        modificarLibro(libro.isbn, libro.isbn,libro.titulo,libro.autor,libro.peso,libro.precio,libro.enInventario,libro.prestados,libro.listaEspera)
-        
+        if not encontrado:
+            ventana = tk.Toplevel(bg="#EAE4D5") #Notify user if book was not borrowed
+            ventana.title("Anuncio")
+            tk.Label(
+                ventana,
+                text="El libro no se le había prestado al usuario" + str(libro.precio),
+                font=("Palatino Linotype", 14), bg="#EAE4D5"
+            ).pack()
+            return
 
+        #Update book inventory and borrowed count
+        libro.enInventario += 1
+        libro.prestados -= 1
+
+        ventana = tk.Toplevel(bg="#EAE4D5") #Notify that the book has been returned
+        ventana.title("Anuncio")
+        tk.Label(ventana,
+            text="El libro ha sido retornado" + str(libro.precio),
+            font=("Palatino Linotype", 14), bg="#EAE4D5").pack()
+
+        if libro.listaEspera: #Automatically lend to the next user in waitlist if any
+            siguienteUsuarioid = libro.listaEspera[0] #Get the ID of the next user in the waitlist (the first user in the queue)
+            siguienteUsuario = buscarUsuario(siguienteUsuarioid) #Get the next user in line from the waitlist
+
+            if siguienteUsuario:
+                siguienteUsuario.agregarReserva(isbn)  #Let the next user borrow the book automatically
+
+        # Save changes to user history and book inventory
+        modificarUsuario(self.id, self.id, self.historialPrestados)
+        modificarLibro(libro.isbn, libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.enInventario, 
+        libro.prestados, libro.listaEspera)
 
 
