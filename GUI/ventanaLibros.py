@@ -33,6 +33,9 @@ def abrirLibros(ventanaPrincipal):
             autor = CampoTextoAutor.get()
             peso = float(CampoTextoPeso.get())
             precio = int(CampoTextoPrecio.get())
+            if peso < 0 or precio < 0:
+                peso = None
+                precio = None 
         cantidad = ventanaCantidadLibros(True) #Opens a new window that will ask the amount they want to add
         if (isbn and titulo and autor and peso and precio and cantidad) or busquedaBinISBN(cargarInventarioOrdenado(),isbn) != -1:
             #If the user filled every box, proceeds to do the verifications before finally adding the book
@@ -95,8 +98,12 @@ def abrirLibros(ventanaPrincipal):
                 autor = CampoTextoAutor.get()
             if CampoTextoPeso.get():
                 peso = CampoTextoPeso.get()
+                if peso < 0:
+                    peso = None
             if CampoTextoPrecio.get():
                 precio = CampoTextoPrecio.get()
+                if precio < 0:
+                    precio = None
             modificarLibro(ISBNanterior,isbn,titulo,autor,peso,precio,None,None)
             if isbn:
                 imprimirLibro()
