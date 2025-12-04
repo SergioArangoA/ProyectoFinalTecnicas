@@ -8,7 +8,9 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 # IMPORTS ABSOLUTOS (estos nunca fallan)
-from Data.ManejoListasMaestras import guardarLibro, buscarLibro, eliminarlibro, modificarLibro
+from Data.ManejoListasMaestras import guardarLibro, busquedaBinISBN, busquedaPorAutor, busquedaporTitulo, eliminarlibro, modificarLibro
+from Data.DataManagement import cargarInventarioOrdenado
+from Classes.Libro import Libro
 
 
 
@@ -26,13 +28,13 @@ def abrirLibros(ventanaPrincipal):
         autor = None
         peso = None
         precio = None
-        if not buscarLibro(isbn): #First looks for a book, if it can't be found, reads the other textboxes data to add it
+        if busquedaBinISBN(cargarInventarioOrdenado(),isbn) == -1: #First looks for a book, if it can't be found, reads the other textboxes data to add it
             titulo = CampoTextoTitulo.get()
             autor = CampoTextoAutor.get()
             peso = float(CampoTextoPeso.get())
             precio = int(CampoTextoPrecio.get())
         cantidad = ventanaCantidadLibros(True) #Opens a new window that will ask the amount they want to add
-        if isbn and titulo and autor and peso and precio and cantidad or buscarLibro(isbn):
+        if (isbn and titulo and autor and peso and precio and cantidad) or busquedaBinISBN(cargarInventarioOrdenado(),isbn) != -1:
             #If the user filled every box, proceeds to do the verifications before finally adding the book
             while cantidad < 0:
                 ventanaError("La cantidad no puede ser un número negativo")
@@ -62,7 +64,9 @@ def abrirLibros(ventanaPrincipal):
             eliminarlibro(isbn, cantidad)
             if cantidad == 0: #Tell the user that the amount was 0
                 ventanaError("No se eliminó ningún libro porque la cantidad ingresada fue cero")
-            libro = buscarLibro(isbn) #Then searches the book after the amount was changed
+            inventario = cargarInventarioOrdenado()
+            indice = busquedaBinISBN(cargarInventarioOrdenado(),isbn)
+            libro = inventario[inventario,indice] #Then searches the book after the amount was changed
             if libro: #If the book is found
                 texto = CampoTextoISBN.get() #Saves the text in the input box
                 CampoTextoISBN.delete(0,tk.END)
@@ -93,7 +97,7 @@ def abrirLibros(ventanaPrincipal):
                 peso = CampoTextoPeso.get()
             if CampoImprimirPrecio.get():
                 precio = CampoTextoPrecio.get()
-            modificarLibro(ISBNanterior,isbn,titulo,autor,peso,precio)
+            modificarLibro(ISBNanterior,isbn,titulo,autor,peso,precio,None,None)
             if isbn:
                 imprimirLibro()
             else:
@@ -167,19 +171,27 @@ def abrirLibros(ventanaPrincipal):
         CampoImprimirEnEstantes.delete(0,tk.END) #Then deletes the previous text found in the textbox
 
         #Then proceeds to search, first by ISBN, then by title, lastly by author
-
+        encontrado = False
         if CampoTextoISBN.get() or CampoTextoTitulo.get() or CampoTextoAutor.get():
             #First checks that the user has at least filled one of the search requirements
             if CampoTextoISBN.get():
-                libro = buscarLibro(CampoTextoISBN.get()) #Searchs the book by ISBN
+                inventario = cargarInventarioOrdenado()
+                indice = busquedaBinISBN(cargarInventarioOrdenado(),CampoTextoISBN.get())
+                if indice != -1:
+                    libro = inventario[indice] #Searchs the book by ISBN
+                    encontrado = True
             
             if not libro and CampoTextoTitulo.get(): #If the book hasn't been found and it can be searched by title, searches it again by title
-                #libro = buscarLibroTitulo
-                libro = libro
+                listaLibros = busquedaporTitulo(CampoTextoTitulo.get())
+                if listaLibros:
+                    abrirTablaBuscados(listaLibros, "Libros con el título " + CampoTextoTitulo.get())
+                    encontrado = True
             
             if not libro and CampoTextoAutor.get(): #If the book hasn't been found and it can be searche by author, searches it again
-                #libro =  buscarLibroAutor
-                libro = libro
+                listaLibros = busquedaPorAutor(CampoTextoAutor.get())
+                if listaLibros:
+                    abrirTablaBuscados(listaLibros, "Libros de " + CampoTextoAutor.get())
+                    encontrado = True
             
             if libro:
                         
@@ -193,7 +205,7 @@ def abrirLibros(ventanaPrincipal):
                 CampoImprimirEnEstantes.insert(0,libro.estantes) #Prints the book data
             
             
-            if not libro:
+            if not encontrado:
                 ventanaError("No se encontró el libro que usted buscaba") #If the book still isn't found, tells the user that it couldn't be found
         
         else:
@@ -208,6 +220,33 @@ def abrirLibros(ventanaPrincipal):
         CampoImprimirEnInventario.config(state="disabled")
         CampoImprimirPrestados.config(state="disabled")
         CampoImprimirEnEstantes.config(state="disabled") #Lastly, disables the print textboxes once again
+    
+    def abrirTablaBuscados(listaLibros: list[Libro],tipoBusqueda: str):
+        """Opens a new window that contains the list of the books found with the search parameters"""
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title(tipoBusqueda)
+
+        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PESO','PRECIO','EN INVENTARIO','PRESTADOS'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ISBN',text='ISBN')
+        tabla.heading('TITULO',text='TÍTULO')
+        tabla.heading('AUTOR',text='AUTOR')
+        tabla.heading('PESO',text='PESO(Kg)')
+        tabla.heading('PRECIO',text='PRECIO')
+        tabla.heading('EN INVENTARIO',text='EN INVENTARIO')
+        tabla.heading('PRESTADOS',text = 'PRESTADOS') #The text that will be shown on each heading
+        tabla.pack()
+
+        for libro in listaLibros:
+            for i in tabla.get_children():
+                tabla.delete(i) #Borra los elementos de la tabla antes de insertar algo
+            tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
+                                                    libro.titulo,
+                                                    libro.autor,
+                                                    str(libro.peso),
+                                                    str(libro.precio),
+                                                    str(libro.enInventario),
+                                                    str(libro.prestados))) #Each one of the book parameters that will be shown in the table
+        
                 
 
 
