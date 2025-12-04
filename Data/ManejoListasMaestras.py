@@ -489,7 +489,7 @@ def estanteriaDeficiente(inventarioOrdenado):
     return listaLibrosEstanteriaDeficiente #Returns the final list
 
 """2. Backtracking"""
-def funcion (inventarioOrdenado): #The opcions will came from the arranged inventory
+def funcionBactracking (inventarioOrdenado): #The opcions will came from the arranged inventory
     """This method acts as a wrapper function to prepare the enviroment for the backtracking initializating
     fundamental variables and lists"""
     maximo=8 #Max weight allowed for shelf
@@ -533,8 +533,6 @@ def funcion (inventarioOrdenado): #The opcions will came from the arranged inven
                 combinacion.pop() #Backtrack
                 print("Se hace Backtrack:", [libro.titulo for libro in combinacion])
 
-    backtracking([],[],0) #Assures strarting with a empty combination and an empty initial combination
-
     print("\nCombinaciones máximas encontradas:")  #Prints all the combinations found
     for combinacion in combinacionesMaximizadas:
         print([libro.titulo for libro in combinacion]) #Prints the title because the isbn is feo
@@ -550,8 +548,6 @@ def funcion (inventarioOrdenado): #The opcions will came from the arranged inven
         #[-1] is used because in the current implementation, combinacionesMaximizadas is being overwritten every time a better combination is found.
         #And the rewriting assures that the last combination in 'combinacionesMaximizadas' is already the best one
     return []  #Returns an empty list if there is no best combination
-
-resultadoBacktracking=funcion(inventarioOrdenado)
 
 
 """USER RELATED METHODS"""

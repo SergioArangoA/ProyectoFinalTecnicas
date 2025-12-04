@@ -46,7 +46,7 @@ def abrirEstanterias(ventanaPrincipal):
         tabla.heading('PRECIO',text='PRECIO') #The text that will be shown on each heading
         tabla.pack()
 
-        for libro in listaLibros[0]: #Because the list of books also contains another list, we only pick the first one
+        for libro in listaLibros: #Because the list of books also contains another list, we only pick the first one
             tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
                                                     libro.titulo,
                                                     libro.autor,
