@@ -45,7 +45,10 @@ class Libro:
         self.precio = precio
         self.enInventario = enInventario
         self.prestados = prestados
-        self.listaEspera = deque(listaEspera)
+        if listaEspera:
+            self.listaEspera = deque(listaEspera)
+        else:
+            self.listaEspera = deque()
         self.estantes = estantes
         #self.atributo = atributo 
         
