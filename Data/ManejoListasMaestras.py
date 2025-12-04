@@ -409,7 +409,7 @@ def agregarLibroEstante(libro, idEstante, listaEstantes):
     return True if it was added, False if not (shelf does not exist or there is nothing on the inventory)
     """
     from Data.DataManagement import cargarEstantes  # Importar para cargar la lista si no se pasa, pero se asume que se pasa
-    
+    from Data.DataManagement import guardarEstantes
     listaEstantes= cargarEstantes()
     #estanteDestino: It is the shelf object to which you want to add the book
     #librosEnEstante: It is a list within the Shelf object that contains all the books that are on that shelf
@@ -430,6 +430,9 @@ def agregarLibroEstante(libro, idEstante, listaEstantes):
     estanteDestino.librosEnEstante.append(libro) #Adds the book to the shelf without verifying for duplicates
     libro.estantes.append(estanteDestino.obtenerID()) #Adds the shelf id to the book
 
+    guardarEstantes(listaEstantes)
+    modificarLibro(libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.cantidad, libro.prestados, 
+    libro.estantes, libro.listaEspera)
     return True #The book has been succesfully added
 
 """Eliminate Book form a shelf"""
@@ -438,6 +441,7 @@ def eliminarLibroEstante(libro, estanteID, listaEstantes):
     Returns True if it was removed, False if not (shelf does not exist or book is not on it)
     """
     from Data.DataManagement import cargarEstantes
+    from Data.DataManagement import guardarEstantes
     
     listaEstantes = cargarEstantes()
 
@@ -458,6 +462,9 @@ def eliminarLibroEstante(libro, estanteID, listaEstantes):
     if estanteID in libro.estantes: #Eliminates the book just once only if is duplicated
         libro.estantes.remove(estanteID)
 
+    guardarEstantes(listaEstantes)
+    modificarLibro(libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.cantidad, libro.prestados, 
+    libro.estantes, libro.listaEspera)
     return True
 
 
