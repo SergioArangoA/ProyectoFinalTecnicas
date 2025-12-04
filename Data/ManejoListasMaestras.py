@@ -280,7 +280,7 @@ def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: f
     if peso:
         libroBuscado.peso = peso
 
-    if enInventario:
+    if enInventario != None:
         libroBuscado.enInventario = enInventario
 
     if prestados:
