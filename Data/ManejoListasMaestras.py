@@ -52,6 +52,13 @@ normalizar():This method helps later to compare strings without Upper case, comm
 
     modificarEstante():Searches a shelf in the shelf list, and then modifies its id
 
+    agregarLibroEstante(): Add a book to a shelf without checking for duplicates, without modifying inventory or loans. 
+    Check that the shelf exists and that there are books in inventory; 
+    return True if it was added, False if not (shelf does not exist or there is nothing on the inventory)
+
+    eliminarLibroEstante(): Removes a book from a specific shelf, also removing the shelf from 'libro.estantes.' Doesn't modify inventory or borrowed books. 
+    Returns True if it was removed, False if not (shelf does not exist or book is not on it)
+
     --SHELF MODULE--
         1. Brute Force
             estanteriaDeficiente(): This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg
@@ -395,6 +402,65 @@ def modificarEstante(viejoID: str, nuevoID: str):
             break
     guardarEstantes(listaEstantes) #saves
 
+"""Add book to a shelf"""
+def agregarLibroEstante(libro, idEstante, listaEstantes):
+    """Add a book to a shelf without checking for duplicates, without modifying inventory or loans. 
+    Check that the shelf exists and that there are books in inventory; 
+    return True if it was added, False if not (shelf does not exist or there is nothing on the inventory)
+    """
+    from Data.DataManagement import cargarEstantes  # Importar para cargar la lista si no se pasa, pero se asume que se pasa
+    
+    listaEstantes= cargarEstantes()
+    #estanteDestino: It is the shelf object to which you want to add the book
+    #librosEnEstante: It is a list within the Shelf object that contains all the books that are on that shelf
+
+    if libro.enInventario<= 0: #Verifies that there is books on the inventory
+        return False #If there are no books returns false so the frontend can show a message
+
+    estanteDestino= None 
+    for estante in listaEstantes: #Goes through the shelves list to look for the shelf
+        if str(estante.obtenerID())== str(idEstante): #Converts the comparision to str just in case
+            #If the shelf id is the same as the one we are going to add the book rewrites the destiny shelf and breaks the loop
+            estanteDestino= estante
+            break
+
+    if estanteDestino is None: #if the shelf doesn't exist return false so the frontend can show a message
+        return False
+    
+    estanteDestino.librosEnEstante.append(libro) #Adds the book to the shelf without verifying for duplicates
+    libro.estantes.append(estanteDestino.obtenerID()) #Adds the shelf id to the book
+
+    return True #The book has been succesfully added
+
+"""Eliminate Book form a shelf"""
+def eliminarLibroEstante(libro, estanteID, listaEstantes):
+    """Removes a book from a specific shelf, also removing the shelf from 'libro.estantes.' Doesn't modify inventory or borrowed books. 
+    Returns True if it was removed, False if not (shelf does not exist or book is not on it)
+    """
+    from Data.DataManagement import cargarEstantes
+    
+    listaEstantes = cargarEstantes()
+
+    estanteDestino = None
+    for estante in listaEstantes: #Goes through the shelves list to look for the shelf
+        if estante.obtenerID() == estanteID:
+            estanteDestino = estante
+            break
+
+    if estanteDestino is None: #if the shelf doesn't exists
+        return False
+
+    if libro not in estanteDestino.librosEnEstante: #If the book isn't in the shelf
+        return False
+    
+    estanteDestino.librosEnEstante.remove(libro) #Removes the book from the shelf
+
+    if estanteID in libro.estantes: #Eliminates the book just once only if is duplicated
+        libro.estantes.remove(estanteID)
+
+    return True
+
+
 """Shelf Module"""
 
 """1. Brute force"""
@@ -416,7 +482,7 @@ def estanteriaDeficiente(inventarioOrdenado):
     return listaLibrosEstanteriaDeficiente #Returns the final list
 
 """2. Backtracking"""
-def funcionBactracking (inventarioOrdenado): #The opcions will came from the arranged inventory
+def funcion (inventarioOrdenado): #The opcions will came from the arranged inventory
     """This method acts as a wrapper function to prepare the enviroment for the backtracking initializating
     fundamental variables and lists"""
     maximo=8 #Max weight allowed for shelf
@@ -462,11 +528,23 @@ def funcionBactracking (inventarioOrdenado): #The opcions will came from the arr
 
     backtracking([],[],0) #Assures strarting with a empty combination and an empty initial combination
 
-    print("\nCombinaciones máximas encontradas:") #prints the backtracking final results
+    print("\nCombinaciones máximas encontradas:")  #Prints all the combinations found
     for combinacion in combinacionesMaximizadas:
-        print([libro.titulo for libro in combinacion])
-        
-    return combinacionesMaximizadas
+        print([libro.titulo for libro in combinacion]) #Prints the title because the isbn is feo
+
+
+    if combinacionesMaximizadas:  #varifies that there is at leats one combination
+        mejor_combinacion = combinacionesMaximizadas[-1]  # last combination saved= the best one
+        print("\nMejor combinación encontrada:") #prints the best combination
+        print([libro.titulo for libro in mejor_combinacion])
+
+    if len(combinacionesMaximizadas) > 0: #returns the best combination if there are any
+        return combinacionesMaximizadas[-1]  #returns the best combination to the frontend
+        #[-1] is used because in the current implementation, combinacionesMaximizadas is being overwritten every time a better combination is found.
+        #And the rewriting assures that the last combination in 'combinacionesMaximizadas' is already the best one
+    return []  #Returns an empty list if there is no best combination
+
+resultadoBacktracking=funcion(inventarioOrdenado)
 
 
 """USER RELATED METHODS"""
