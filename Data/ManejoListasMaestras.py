@@ -431,8 +431,8 @@ def agregarLibroEstante(libro, idEstante, listaEstantes):
     libro.estantes.append(estanteDestino.obtenerID()) #Adds the shelf id to the book
 
     guardarEstantes(listaEstantes)
-    modificarLibro(libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.cantidad, libro.prestados, 
-    libro.estantes, libro.listaEspera)
+    modificarLibro(libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.enInventario, libro.prestados, 
+    libro.listaEspera, libro.estantes)
     return True #The book has been succesfully added
 
 """Eliminate Book form a shelf"""
@@ -463,8 +463,8 @@ def eliminarLibroEstante(libro, estanteID, listaEstantes):
         libro.estantes.remove(estanteID)
 
     guardarEstantes(listaEstantes)
-    modificarLibro(libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.cantidad, libro.prestados, 
-    libro.estantes, libro.listaEspera)
+    modificarLibro(libro.isbn, libro.titulo, libro.autor, libro.peso, libro.precio, libro.enInventario, libro.prestados, 
+    libro.listaEspera, libro.estantes)
     return True
 
 
