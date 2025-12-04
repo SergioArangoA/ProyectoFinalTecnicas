@@ -8,7 +8,7 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 from Classes.Libro import Libro
-from Data.DataManagement import cargarInventarioGeneral
+from Data.DataManagement import cargarInventarioGeneral, cargarReporteGlobal
 from Data.DataManagement import cargarInventarioOrdenado
 from Data.ManejoListasMaestras import valorTotalAutor
 from Data.ManejoListasMaestras import pesoPromedioAutor
@@ -40,6 +40,27 @@ def abrirInventario(ventanaPrincipal):
                                                     str(libro.precio),
                                                     str(libro.enInventario),
                                                     str(libro.prestados))) #Each one of the book parameters that will be shown in the table
+    
+    def abrirReporteGlobal(reporteGlobal):
+        """Opens a new window that contains the global report"""
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title("Reporte global")
+
+        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PRECIO'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ISBN',text='ISBN')
+        tabla.heading('TITULO',text='TÍTULO')
+        tabla.heading('AUTOR',text='AUTOR')
+        tabla.heading('PRECIO',text='PRECIO') #The text that will be shown on each heading
+        tabla.pack()
+
+        for libro in reporteGlobal:
+            tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
+                                                    libro.titulo,
+                                                    libro.autor,
+                                                    str(libro.peso),
+                                                    str(libro.precio))) #Each one of the book parameters that will be shown in the table
+    
+
         
     def buscarPesoYValor():
         """Reads the author name textbox, then searchs the average weight and total price of their books in the inventory."""
@@ -97,7 +118,7 @@ def abrirInventario(ventanaPrincipal):
     InventarioOrdenado= tk.Button(frameBotones, text="Inventario ordenado",command=lambda: abrirTablaInventario(cargarInventarioOrdenado(),"Inventario ordenado"), width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
     InventarioOrdenado.grid(row=0,column=1,sticky="nsew",padx=20)
 
-    botonReporteGlobal = tk.Button(frameBotones,text="Reporte global",width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
+    botonReporteGlobal = tk.Button(frameBotones,text="Reporte global",command= lambda: abrirReporteGlobal(cargarReporteGlobal()),width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
     botonReporteGlobal.grid(row=0,column=2,sticky="nsew",padx=20)
 
     #AUTHOR'S BOOKS STATISTICS
