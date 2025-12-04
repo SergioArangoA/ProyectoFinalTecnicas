@@ -8,9 +8,9 @@ if ROOT not in sys.path:
     sys.path.append(ROOT)
 
 from Classes.Libro import Libro
-from Data.DataManagement import cargarInventarioGeneral, cargarReporteGlobal
+from Data.DataManagement import cargarInventarioGeneral, guardarReporteGlobal
 from Data.DataManagement import cargarInventarioOrdenado
-from Data.ManejoListasMaestras import valorTotalAutor
+from Data.ManejoListasMaestras import valorTotalAutor, reporteGlobal
 from Data.ManejoListasMaestras import pesoPromedioAutor
 from Data.ManejoListasMaestras import normalizar
 
@@ -41,10 +41,13 @@ def abrirInventario(ventanaPrincipal):
                                                     str(libro.enInventario),
                                                     str(libro.prestados))) #Each one of the book parameters that will be shown in the table
     
-    def abrirReporteGlobal(reporteGlobal):
+    def abrirReporteGlobal():
         """Opens a new window that contains the global report"""
         ventanaTabla = tk.Toplevel(bg="#EAE4D5")
         ventanaTabla.title("Reporte global")
+        inventarioGeneral = cargarInventarioGeneral()
+        reporte = reporteGlobal(inventarioGeneral)
+        guardarReporteGlobal(reporte)
 
         tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PRECIO'),show= 'headings')#ttk.Treeview alows to place elements in a table
         tabla.heading('ISBN',text='ISBN')
@@ -53,7 +56,7 @@ def abrirInventario(ventanaPrincipal):
         tabla.heading('PRECIO',text='PRECIO') #The text that will be shown on each heading
         tabla.pack()
 
-        for libro in reporteGlobal:
+        for libro in reporte:
             tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
                                                     libro.titulo,
                                                     libro.autor,
@@ -118,7 +121,7 @@ def abrirInventario(ventanaPrincipal):
     InventarioOrdenado= tk.Button(frameBotones, text="Inventario ordenado",command=lambda: abrirTablaInventario(cargarInventarioOrdenado(),"Inventario ordenado"), width=25, height=2, font=("Palatino Linotype", 14), bg="#B6B09F")
     InventarioOrdenado.grid(row=0,column=1,sticky="nsew",padx=20)
 
-    botonReporteGlobal = tk.Button(frameBotones,text="Reporte global",command= lambda: abrirReporteGlobal(cargarReporteGlobal()),width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
+    botonReporteGlobal = tk.Button(frameBotones,text="Reporte global",command= lambda: abrirReporteGlobal(),width=25, height=2, font=("Palatino Linotype",14),bg="#B6B09F")
     botonReporteGlobal.grid(row=0,column=2,sticky="nsew",padx=20)
 
     #AUTHOR'S BOOKS STATISTICS
