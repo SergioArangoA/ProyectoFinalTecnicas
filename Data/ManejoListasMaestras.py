@@ -121,8 +121,8 @@ normalizar():This method helps later to compare strings without Upper case, comm
 
     mezclado(): This method is the MERGE SORT organization part, Sort in ascending order by the value (COP) of the books from the previously divided lists
 """
-inventarioOrdenado=cargarInventarioOrdenado
-inventarioGeneral=cargarInventarioGeneral
+inventarioOrdenado=cargarInventarioOrdenado()
+inventarioGeneral=cargarInventarioGeneral()
 def normalizar(cadena):
     """This method helps later to compare strings without Upper case, comma, hyphen and dot"""
     cadena= cadena.lower()            #Convert to lower case
@@ -489,10 +489,12 @@ def estanteriaDeficiente(inventarioOrdenado):
 def funcionBactracking (inventarioOrdenado): #The opcions will came from the arranged inventory
     """This method acts as a wrapper function to prepare the enviroment for the backtracking initializating
     fundamental variables and lists"""
+    inventarioOrdenado= cargarInventarioOrdenado()
     maximo=8 #Max weight allowed for shelf
     combinacionesMaximizadas=[] #The final result of the backtracking
     mejorPrecioGlobal= [0] #This is created because we need a mutable int, so if we just put an int any change inside the function would not be reflected outside because integers in Python are immutable
     #This is necessary because we want to compare the price of the current combination with the best global price found so far, within all the recursive calls.
+    mejorCombinacion = []
 
     def backtracking(combinacion, mejorCombinacion, indice):
         """This method is the backtracking it finds the combination of books from the inventory that maximizes the total price
@@ -530,6 +532,7 @@ def funcionBactracking (inventarioOrdenado): #The opcions will came from the arr
                 combinacion.pop() #Backtrack
                 print("Se hace Backtrack:", [libro.titulo for libro in combinacion])
 
+    backtracking([], mejorCombinacion, 0)
     print("\nCombinaciones máximas encontradas:")  #Prints all the combinations found
     for combinacion in combinacionesMaximizadas:
         print([libro.titulo for libro in combinacion]) #Prints the title because the isbn is feo
