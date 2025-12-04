@@ -38,7 +38,6 @@ class Estante:
         #del stand, se puedan actualizar de inmediato en los libros del stand el nuevo
         #nombre del stand, así evitaremos errores más adelante
         self.librosEnEstante = librosEnEstante
-        self.libroEnEstante: list[bool]= [] #Ask if the book in that position is on the shelf: if true that book is on the shelf, if false it's loaned out/borrowed
         
     def obtenerID(self):
         """This method returns the Id attribute"""
@@ -67,6 +66,13 @@ class Estante:
     def obtenerCantidadDeLibros(self):
         """Returns the amount of books inside the stand"""
         return len(self.librosEnEstante)
+    
+    def obtenerValorAcumulado(self):
+        """Returns the accumulated value of books inside the stand"""
+        valor = 0
+        for libro in self.librosEnEstante:
+            valor += libro.precio #Adds each book's value to the total amount
+        return valor
     
 
     

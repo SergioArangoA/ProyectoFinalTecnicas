@@ -25,13 +25,59 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
 from Classes.Estante import Estante
-from Data.ManejoListasMaestras import guardarEstanteFuncion
+from Data.ManejoListasMaestras import guardarEstanteFuncion, estanteriaDeficiente, funcionBactracking
 from GUI import *
 
 #STAND WINDOW
 def abrirEstanterias(ventanaPrincipal):
     """Opens a window, which contains the Stand class CRUD."""
     estante = None
+
+    def abrirEstanteriaOptima():
+        """Shows the user the best way to arrange the books in the stand"""
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title("Ordenamiento óptimo")
+        listaLibros = funcionBactracking(cargarInventarioOrdenado())
+        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN','TITULO','AUTOR','PESO','PRECIO'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ISBN',text='ISBN')
+        tabla.heading('TITULO',text='TÍTULO')
+        tabla.heading('AUTOR',text='AUTOR')
+        tabla.heading('PESO',text='PESO(Kg)')
+        tabla.heading('PRECIO',text='PRECIO') #The text that will be shown on each heading
+        tabla.pack()
+
+        for libro in listaLibros[0]: #Because the list of books also contains another list, we only pick the first one
+            tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
+                                                    libro.titulo,
+                                                    libro.autor,
+                                                    str(libro.peso),
+                                                    str(libro.precio))) #Each one of the book parameters that will be shown in the table
+
+
+
+    def abrirEstanteriaDeficiente():
+        """Shows the list of bad ways to arrange the books in a stand"""
+        listaLibrosDeficiente = estanteriaDeficiente(cargarInventarioOrdenado())
+        ventanaTabla = tk.Toplevel(bg="#EAE4D5")
+        ventanaTabla.title("Estanterias deficientes")
+
+        tabla = ttk.Treeview(ventanaTabla, columns=('ISBN1','ISBN2','ISBN3','ISBN4','PESO'),show= 'headings')#ttk.Treeview alows to place elements in a table
+        tabla.heading('ISBN1',text='ISBN1')
+        tabla.heading('ISBN2',text='ISBN2')
+        tabla.heading('ISBN3',text='ISBN3')#For each list of four books, their respective ISBN will be shown
+        tabla.heading('ISBN4',text='ISBN4')
+        tabla.heading('PESO',text='PESO ACUMULADO') #The text that will be shown on each heading
+        tabla.pack()
+
+        for lista in listaLibrosDeficiente:
+            pesoAcumulado = lista[0].peso + lista[1].peso + lista[2].peso + lista[3].peso
+            tabla.insert(parent='',index=tk.END,values=(lista[0].isbn, #tk.END agrega el elemento al final de la tabla
+                                                    lista[1].isbn,
+                                                    lista[2].isbn,
+                                                    lista[3].isbn,
+                                                    str(pesoAcumulado))) #Each one of the book parameters that will be shown in the table
+            
+
 
     def abrirTablaLibros():
         """Opens a new window that contains the data of the books saved in the stand's inventory"""
@@ -150,9 +196,9 @@ def abrirEstanterias(ventanaPrincipal):
 
         for estante in listaEstantes:
             tabla.insert(parent='',index=tk.END,values=(estante.obtenerID(), #tk.END adds the element at the end of the table
-                                                    estante.cantidadLibros(),
-                                                    estante.calcularPesoAcumulado(),
-                                                    str(estante.calcularValorAcumulado()))) #Each one of the parameters that will be shown in the table
+                                                    estante.obtenerCantidadDeLibros(),
+                                                    estante.obtenerPesoAcumulado(),
+                                                    str(estante.obtenerValorAcumulado()))) #Each one of the parameters that will be shown in the table
         
     
 
@@ -212,7 +258,7 @@ def abrirEstanterias(ventanaPrincipal):
     CampoTextoID.grid(row=0,column=1,pady=10,sticky="w")
     botonAgregar = tk.Button(frameEstante,text="Agregar",command=lambda: guardarEstanterias(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonAgregar.grid(row=1,column=0,padx=10,pady=20,sticky="e")
-    botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palat-ino Linotype", 14), bg="#B6B09F")
     botonModificar.grid(row=1,column=1,padx=10,pady=20,sticky="w")
     botonBuscar = tk.Button(frameEstante,text="Buscar", command=lambda: imprimirEstante(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonBuscar.grid(row=2,column=0,padx=10,pady=20,sticky="e")
@@ -228,9 +274,9 @@ def abrirEstanterias(ventanaPrincipal):
     campoImpresionID = tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2,state="disabled")
     campoImpresionID.grid(row=0,column=1,pady=10,sticky="w")
     
-    labelCantidadLibros = tk.Label(frameInfoEstanteActual,text="Cantidad de libros: ",state="disabled", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
+    labelCantidadLibros = tk.Label(frameInfoEstanteActual,text="Cantidad de libros: ", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
     labelCantidadLibros.grid(row=1,column=0,pady=10,sticky="e")
-    CampoTextoCantidadLibros= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
+    CampoTextoCantidadLibros= tk.Entry(frameInfoEstanteActual,state="disabled",font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
     CampoTextoCantidadLibros.grid(row=1,column=1,pady=10,sticky="w")
 
     labelPeso = tk.Label(frameInfoEstanteActual,text="Peso acumulado:", font=("Palatino Linotype", 14, "bold"), bg="#EAE4D5")
@@ -251,9 +297,9 @@ def abrirEstanterias(ventanaPrincipal):
     botonEliminarLibro = tk.Button(frameLibros,text="Remover libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonEliminarLibro.grid(row=2,column=1,pady=10,sticky="w",padx=10)
 
-    botonOrdenarOptimo = tk.Button(frameLibros,text="Ordenamiento óptimo",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonOrdenarOptimo = tk.Button(frameLibros,command=lambda: abrirEstanteriaOptima(),text="Ordenamiento óptimo",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonOrdenarOptimo.grid(row=3,column=0,pady=20,sticky="e",padx=10)
-    botonOrdenarDeficiente = tk.Button(frameLibros,text="Ordenamiento deficiente",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonOrdenarDeficiente = tk.Button(frameLibros,command=lambda: abrirEstanteriaDeficiente(),text="Ordenamiento deficiente",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonOrdenarDeficiente.grid(row=3,column=1,pady=20,sticky="w",padx=10)
 
     volver=tk.Button(ventanaEstante, text="VOLVER AL MENÚ", command=lambda: [ventanaEstante.destroy(), ventanaPrincipal.deiconify()], bg="#213555",fg="white", font=("Palatino Linotype", 12), width=20).grid(row=4, column=1, padx=10, pady=20,sticky="w")

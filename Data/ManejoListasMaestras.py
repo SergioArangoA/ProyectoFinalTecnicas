@@ -407,7 +407,7 @@ def estanteriaDeficiente(inventarioOrdenado):
     return listaLibrosEstanteriaDeficiente #Returns the final list
 
 """2. Backtracking"""
-def funcion (inventarioOrdenado): #The opcions will came from the arranged inventory
+def funcionBactracking (inventarioOrdenado): #The opcions will came from the arranged inventory
     """This method acts as a wrapper function to prepare the enviroment for the backtracking initializating
     fundamental variables and lists"""
     maximo=8 #Max weight allowed for shelf
@@ -458,8 +458,6 @@ def funcion (inventarioOrdenado): #The opcions will came from the arranged inven
         print([libro.titulo for libro in combinacion])
         
     return combinacionesMaximizadas
-
-resultadoBacktracking=funcion(inventarioOrdenado)
 
 
 """USER RELATED METHODS"""
