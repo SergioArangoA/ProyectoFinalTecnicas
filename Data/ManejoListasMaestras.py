@@ -248,30 +248,16 @@ def eliminarlibro(isbn: str, cantidad:int):
 
 
 
-def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int):
+def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int,listaEspera = None):
     """This method updates the data of a book, by removing it from both inventories then re-adding it with the new atributes"""
     from Data.DataManagement import cargarInventarioGeneral
     from Data.DataManagement import cargarInventarioOrdenado
 
     inventarioGeneral=cargarInventarioGeneral() #Loads inventories
     inventarioOrdenado= cargarInventarioOrdenado()
-
-    libroInventarioOrdenado = None #Initialize variable to store the book in the ordered inventory
-    posicionInventarioGeneral = -1
-
-    libroBuscado= buscarLibro(ISBNanterior) #Call the search function to find the book by its old ISBN 
-
-    for i in range(0,len(inventarioGeneral)):#Loop to find the index of the book in general inventory
-        if inventarioGeneral[i].isbn == ISBNanterior:
-            posicionInventarioGeneral = i #Saves the position of the book
-            break
-
-    for libro in inventarioOrdenado: #Looks for the book on each inventory to remove it
-        if libro.isbn == ISBNanterior:
-            libroInventarioOrdenado = libro #found Save reference to the found book
-            break #leaves the loop once its 
-    inventarioOrdenado.remove(libroInventarioOrdenado) #Removes the book from the ordered inventory
-    guardarInventarioOrdenado(inventarioOrdenado) #Saves the change made
+    indice = busquedaBinISBN(inventarioOrdenado,ISBNanterior) #Call the search function to find the book by its old ISBN
+    libroBuscado = inventarioOrdenado[indice] 
+    
     if isbn:
         libroBuscado.isbn = isbn
 
@@ -280,26 +266,49 @@ def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: f
 
     if autor:
         libroBuscado.autor = autor
+    
+    if precio:
+        libroBuscado.precio = precio
 
     if peso:
         libroBuscado.peso = peso
 
-    if precio:
-        libroBuscado.precio = precio
-    
     if enInventario:
         libroBuscado.enInventario = enInventario
-    
+
     if prestados:
         libroBuscado.prestados = prestados
+        
+    if listaEspera:
+        libroBuscado.listaEspera = listaEspera
 
-    #This section updates the inventories
-    guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
-    inventarioGeneral = cargarInventarioGeneral()
-    inventarioGeneral.pop() #Because the new book was moved to the end, it's popped to avoid duplication
-    #At last, the book in that position is modified, and then the inventory is saved
-    inventarioGeneral[posicionInventarioGeneral] = Libro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
-    guardarInventarioGeneral(inventarioGeneral)
+    for i in range(0,len(inventarioGeneral)): #Loop to find the index of the book in general inventory
+        if inventarioGeneral[i].isbn.strip("-") == ISBNanterior.strip("-"):
+            print(str(inventarioGeneral[i].precio))
+            print(str(libroBuscado.precio))
+            inventarioGeneral[i] = libroBuscado
+            print(str(inventarioGeneral[i].precio)) #Replaces the book
+            break
+    guardarInventarioGeneral(inventarioGeneral) #Saves the general inventory
+    indiceInventarioOrdenado = 0
+    for i in range(0,len(inventarioOrdenado)): #Loop to find the index of the book in general inventory
+        if inventarioOrdenado[i].isbn.strip("-") == ISBNanterior.strip("-"):
+            indiceInventarioOrdenado = i #Saves the index
+            break
+    del inventarioOrdenado[indiceInventarioOrdenado] #Removes the book from the ordered inventory
+    insertado=False #Flag Var to know if the book has been already added to the Organized Inventory
+
+    for i in range(len(inventarioOrdenado)):#goes throught the organized inventory to fill it 
+        libro= inventarioOrdenado[i] 
+        if libroBuscado.isbn.strip("-") < libro.isbn.strip("-"):#This action is the one that allows the books to be organized
+            inventarioOrdenado.insert(i, libroBuscado)#this inserts the book in the correct position
+            insertado= True #the book has been inserted
+            break
+
+    if not insertado: #if the book doesnt match the comparision its gonna be add to the end of the list beacuse is greater than the others
+        inventarioOrdenado.append(libroBuscado)
+    guardarInventarioOrdenado(inventarioOrdenado)
+
 
 """SHELVES RELATED METHODS"""
 
@@ -516,8 +525,8 @@ def eliminarUsuario(id: str):
     del listaUsuarios[posicionUsuarioBuscado]
     guardarUsuarios(listaUsuarios) #Saves the user list once the one searched has been deleted
 
-def modificarUsuario(viejoID: str, nuevoID: str):
-    """Searches a user in the users list, and then modifies its id"""
+def modificarUsuario(viejoID: str, nuevoID: str,historialReservas = None):
+    """Searches a user in the users list, and then modifies their data"""
     from Data.DataManagement import cargarUsuarios
     from Data.DataManagement import guardarUsuarios
 
@@ -525,6 +534,9 @@ def modificarUsuario(viejoID: str, nuevoID: str):
     for usuario in listaUsuarios:
         if usuario.id == viejoID:
             usuario.id = nuevoID  #Updates the user ID
+            if historialReservas:
+                usuario.historialPrestados = historialReservas #If there was a change made to the reservation history, updates it 
+            
             break
     guardarUsuarios(listaUsuarios)  #Saves the modified list
 

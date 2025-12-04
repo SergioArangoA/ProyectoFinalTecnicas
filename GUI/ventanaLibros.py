@@ -95,7 +95,7 @@ def abrirLibros(ventanaPrincipal):
                 autor = CampoTextoAutor.get()
             if CampoTextoPeso.get():
                 peso = CampoTextoPeso.get()
-            if CampoImprimirPrecio.get():
+            if CampoTextoPrecio.get():
                 precio = CampoTextoPrecio.get()
             modificarLibro(ISBNanterior,isbn,titulo,autor,peso,precio,None,None)
             if isbn:
