@@ -25,6 +25,12 @@ def guardarInventarioOrdenado(InventarioGeneral: list[Libro]):
         diccionarioLibros = [libro.libroADict() for libro in InventarioGeneral]
         json.dump(diccionarioLibros, archivo, ensure_ascii=False, indent=4)
 
+def guardarReporteGlobal(reporteGlobal: list[Libro]):
+    """Saves the global report in a JSON"""
+    with open ("ReporteGlobal.json", "w",encoding = "utf-8") as archivo:
+        diccionarioLibros = [libro.libroADict() for libro in reporteGlobal]
+        json.dump(diccionarioLibros, archivo, ensure_ascii=False, indent=4)
+
 def cargarInventarioGeneral():
     """This method loads the general inventory JSON, and returns a list
     of instances of the class Libro. if the JSON cannot be openned, it will print
@@ -52,6 +58,21 @@ def cargarInventarioOrdenado():
     except (FileNotFoundError, json.JSONDecodeError):
         generalInventory = []
         print("No encontró un inventario general, creando una lista vacía.")
+        return []
+
+def cargarReporteGlobal():
+    """This method loads the global report JSON, and returns a list
+    of instances of the class Libro. if the JSON cannot be openned, it will print
+    in console a warning and return an empty list"""
+    try:
+        with open("ReporteGlobal.json","r",encoding="utf-8") as archivo:
+            InventarioCargado = json.load(archivo)
+            print("Reporte global cargado exitosamente")
+            reporteGlobal =[Libro(**libro)for libro in InventarioCargado]
+            return reporteGlobal
+    except (FileNotFoundError, json.JSONDecodeError):
+        reporteGlobal = []
+        print("No encontró un reporte global, creando una lista vacía.")
         return []
     
 def guardarEstantes(ListaEstantes: list[Estante]):
