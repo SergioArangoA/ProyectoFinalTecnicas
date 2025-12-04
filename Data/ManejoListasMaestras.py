@@ -503,24 +503,18 @@ def buscarUsuario(id: str):
 def eliminarUsuario(id: str):
     """Receives a user's ID and removes them from the user list.
     Maintains correct memory references when modifying the loaded list.
-    Returns True if the user was successfully removed, False if the user does not exist.
     """
     from Data.DataManagement import cargarUsuarios, guardarUsuarios
 
     listaUsuarios = cargarUsuarios()
 
-    usuarioBuscado = None #Inicializates the var who is going to keep the found user
-    for usuario in listaUsuarios: #Goes throught the user list
-        if usuario.id == id: #If anyone of the id users is the same as the one the program is looking for
-            usuarioBuscado = usuario  #Saves the searched 
+    posicionUsuarioBuscado = None #Inicializates the var who is going to keep the position of the found user
+    for i in range (0,len(listaUsuarios)): #Goes throught the user list
+        if listaUsuarios[i].id == id: #If anyone of the id users is the same as the one the program is looking for
+            posicionUsuarioBuscado = i  #Saves the position
             break  #The user has been found 
-
-    if usuarioBuscado: #verifies is the user has been found
-        listaUsuarios.remove(usuarioBuscado)  #Eliminates from the list the same instance from the found user assuring the delete of the right object
-        guardarUsuarios(listaUsuarios)  #List save
-        return True  #The user has been succesfully eliminated
-    else:
-        return False  #The user is not in the list
+    del listaUsuarios[posicionUsuarioBuscado]
+    guardarUsuarios(listaUsuarios) #Saves the user list once the one searched has been deleted
 
 def modificarUsuario(viejoID: str, nuevoID: str):
     """Searches a user in the users list, and then modifies its id"""

@@ -11,15 +11,29 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.append(ROOT)
 from Classes.Usuario import Usuario
-from Data.ManejoListasMaestras import buscarUsuario, guardarUsuarioFuncion
-from Data.ManejoListasMaestras import busquedaBinISBN
+from Data.ManejoListasMaestras import buscarUsuario, guardarUsuarioFuncion, busquedaBinISBN, eliminarUsuario
 from Data.DataManagement import cargarInventarioOrdenado, cargarUsuarios
 
 
 def abrirUsuarios(ventanaPrincipal):
 
+
     """Opens the User class CRUD"""
     usuario = None
+
+    def borrarUsuario():
+        """Deletes the searched user from the user list"""
+        nonlocal usuario
+        if usuario:
+            eliminarUsuario(usuario.id)
+            CampoImprimirUsuario.config(state="normal")
+            CampoImprimirUsuario.delete(0,tk.END)
+            CampoImprimirUsuario.config(state="disabled")
+            usuario = None #Deletes the user from both the list and the window's memory. Also deletes the text shown on the print ID textbox
+        
+        else:
+            ventanaError("Por favor busque un usuario antes de eliminarlo")
+
 
     def guardarUsuarios():
         """Reads the user's ID in the ID label and adds it to the users list"""
@@ -177,7 +191,7 @@ def abrirUsuarios(ventanaPrincipal):
 
     BuscarUsuario=tk.Button(frameBotonesUsuario,command=lambda: imprimirUsuario(), text="Buscar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=2, padx=10, pady=20,sticky="nsew")
 
-    EliminarUsuario = tk.Button(frameBotonesUsuario, text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
+    EliminarUsuario = tk.Button(frameBotonesUsuario,command=lambda:borrarUsuario(), text="Eliminar", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=0, column=3, padx=10, pady=20,sticky="nsew")
 
     abrirListaUsuario = tk.Button(frameBotonesUsuario,command=lambda: imprimirUsuarios(), text="Abrir lista de usuarios", width=20, height=2, font=("Palatino Linotype", 14), bg="#B6B09F").grid(row=1, column=1,columnspan=2, padx=10, pady=20,sticky="nsew")
     #BOOK RESERVATION CRUD
