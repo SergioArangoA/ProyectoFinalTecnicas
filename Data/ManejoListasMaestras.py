@@ -326,21 +326,21 @@ def eliminarEstante (id: str):
     listaEstantes= cargarEstantes()
     inventarioGeneral=cargarInventarioGeneral()
     inventarioOrdenado= cargarInventarioOrdenado()
+    estanteBuscado = None
 
     idEstanteEliminar= id
-    estanteBuscado= buscarEstante(idEstanteEliminar) 
-    if estanteBuscado:
-        listaEstantes.remove(estanteBuscado)
+    for estante in listaEstantes:
+        if estante.obtenerID() == idEstanteEliminar:
+            estanteBuscado = estante
+            break
+    listaEstantes.remove(estanteBuscado)
 
     #Updates each Book Object by removing the shelf ID from its 'estantes' attribute
-    for libro in inventarioGeneral: #For each book in the general inventory
-        if idEstanteEliminar in libro.estantes: #Checks if the shelf ID to be deleted exists in the current book's 'estantes' attribute.
-        #'libro.estantes' is a list of IDs representing the shelves where this book is stored.
-            libro.estantes.remove(idEstanteEliminar) #Removes the shelf
+    for libro in inventarioGeneral: 
+        libro.estantes = [estante for estante in libro.estantes if estante.obtenerID() != idEstanteEliminar] #Creates a new list that adds the shelf only if its ID is different from the one that was deleted
     
-    for libro in cargarInventarioOrdenado: #For each book in the organized inventory
-        if idEstanteEliminar in libro.estantes:
-            libro.estantes.remove(idEstanteEliminar)
+    for libro in inventarioOrdenado: #For each book in the organized inventory
+        libro.estantes = [estante for estante in libro.estantes if estante.obtenerID() != idEstanteEliminar] #Creates a new list that adds the shelf only if its ID is different from the one that was deleted
     
     guardarEstantes(listaEstantes) #Saves
     guardarInventarioGeneral(inventarioGeneral)
