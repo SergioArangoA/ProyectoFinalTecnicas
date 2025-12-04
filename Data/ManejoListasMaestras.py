@@ -145,7 +145,7 @@ def guardarLibro(isbn: str, titulo: str, autor: str, peso: float, precio: int, c
     
 
     for libro in inventarioGeneral: #Goes throught the general inventory
-        if libro.isbn.strip("-")== isbnNuevo and cantidad>0: #checks if the book is already in the inventory if it is, ask how many of the same book are gonna be added
+        if libro.isbn.strip("-")== isbnNuevo and cantidad>=0: #checks if the book is already in the inventory if it is, ask how many of the same book are gonna be added
             libro.enInventario+= cantidad #If the book exists it just going to update the amount of books
             guardarInventarioGeneral(inventarioGeneral)
             guardarInventarioOrdenado(inventarioOrdenado)
