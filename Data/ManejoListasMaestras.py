@@ -50,7 +50,20 @@ normalizar():This method helps later to compare strings without Upper case, comm
     and can be found. Removes the object from the both Master Lists and returns True so the frontend 
     can show a succes message
 
-    estanteriaDeficiente(): This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg
+    modificarEstante():Searches a shelf in the shelf list, and then modifies its id
+
+    --SHELF MODULE--
+        1. Brute Force
+            estanteriaDeficiente(): This algorithm finds and lists all possible combinations of four books that, when their weight in kg is added together, exceed a "risk" of 8kg
+        2. Backtracking
+            funcion ():This method acts as a wrapper function to prepare the enviroment for the backtracking initializating
+            fundamental variables and lists
+
+            backtracking():This method is the backtracking it finds the combination of books from the inventory that maximizes the total price
+            without exceeding 8kg. It recursively explores all possible combinations, taking into account the available copies 
+            'enInventario' of each book it doesn't count the borrowed books.
+            At the end, it displays the optimal combinations and returns them
+
     
  --USER RELATED METHODS--
     guardarUsuarioFuncion(): This method calls the User attributes and creates a User Object wich is going to be added to the Users List after being created
@@ -58,6 +71,12 @@ normalizar():This method helps later to compare strings without Upper case, comm
 
     buscarUsuario(): This method searches for a User in the list of Users and returns the shelf object if it exists.
     If it does not exist, it returns False so the frontend can show the corresponding message
+
+    eliminarUsuario(): Receives a user's ID and removes them from the user list.
+    Maintains correct memory references when modifying the loaded list.
+    Returns True if the user was successfully removed, False if the user does not exist.
+
+    modificarUsuario(): Searches a user in the users list, and then modifies its id
 
 --RECURSION--
     -STACK
@@ -177,16 +196,14 @@ def eliminarlibro(isbn: str, cantidad:int):
 
     libroInventarioGeneral = None
     libroInventarioOrdenado = None
-    posicionInventarioGeneral = -1
 
-    libroBuscado= buscarLibro(isbn) #Calls the searching method
+    libroBuscado= buscarLibro(isbn) #Call the search function to get the book object
 
-    if libroBuscado:
+    if libroBuscado: #First, remove quantity from inventory if enough stock is available
         if libroBuscado.enInventario >= cantidad: #If the quantity to be eliminated fits on the quantity available it will eliminate that quantity
             libroBuscado.enInventario-= cantidad #Eliminates the quantity
             cantidad=0 #The book quantity already been eliminated, there's nothing left, the quantity to be eliminated is zero
 
-        
         
         else: #There are not enough books in the inventory to eliminated
             cantidad-= libroBuscado.enInventario #It substracts the quantity that can be substracted
@@ -199,27 +216,30 @@ def eliminarlibro(isbn: str, cantidad:int):
             else:
                 libroBuscado.prestados=0 #There is no borrowed books
                 cantidad=0 #No books will be eliminated
-        for libro in inventarioGeneral:
-            if libro.isbn == libroBuscado.isbn:
-                libro.enInventario = libroBuscado.enInventario
-                libro.prestados = libroBuscado.prestados
-                break
+
+        for libro in inventarioGeneral: #Update the book data in the general inventory
+            if libro.isbn == libroBuscado.isbn: #finds matching book
+                libro.enInventario = libroBuscado.enInventario #updates the inventory count
+                libro.prestados = libroBuscado.prestados #update borrowed count
+                break #exit loop once the book is found
         guardarInventarioGeneral(inventarioGeneral)
 
-        for libro in inventarioOrdenado:
+        for libro in inventarioOrdenado: #updates the data in arranged inventory
             if libro.isbn == libroBuscado.isbn:
                 libro.enInventario = libroBuscado.enInventario
                 libro.prestados = libroBuscado.prestados
         guardarInventarioOrdenado(inventarioOrdenado)
  
-        if libroBuscado.enInventario + libroBuscado.prestados <= 0:
-            for libro in inventarioGeneral:
+        if libroBuscado.enInventario + libroBuscado.prestados <= 0:#If total copies (inventory + borrowed) is zero, remove the book entirely
+
+            for libro in inventarioGeneral: #Remove from general inventory
                 if libro.isbn == libroBuscado.isbn:
                     libroInventarioGeneral = libro
                     break
-            inventarioGeneral.remove(libroInventarioGeneral)
-            guardarInventarioGeneral(inventarioGeneral)
-            for libro in inventarioOrdenado:
+            inventarioGeneral.remove(libroInventarioGeneral) #removes
+            guardarInventarioGeneral(inventarioGeneral) #saves
+
+            for libro in inventarioOrdenado: #remove for organized inventory
                 if libro.isbn == libroBuscado.isbn:
                     libroInventarioOrdenado = libro
                     break
@@ -228,7 +248,7 @@ def eliminarlibro(isbn: str, cantidad:int):
 
 
 
-def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario = int, prestados = int):
+def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int):
     """This method updates the data of a book, by removing it from both inventories then re-adding it with the new atributes"""
     from Data.DataManagement import cargarInventarioGeneral
     from Data.DataManagement import cargarInventarioOrdenado
@@ -236,20 +256,20 @@ def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: f
     inventarioGeneral=cargarInventarioGeneral() #Loads inventories
     inventarioOrdenado= cargarInventarioOrdenado()
 
-    libroInventarioGeneral = None
-    libroInventarioOrdenado = None
-    posicionInventarioGeneral = [-1]
+    libroInventarioOrdenado = None #Initialize variable to store the book in the ordered inventory
+    posicionInventarioGeneral = -1
 
-    libroBuscado= buscarLibro(ISBNanterior) #Calls the searching method        
-    for i in range(0,len(inventarioGeneral)):
+    libroBuscado= buscarLibro(ISBNanterior) #Call the search function to find the book by its old ISBN 
+
+    for i in range(0,len(inventarioGeneral)):#Loop to find the index of the book in general inventory
         if inventarioGeneral[i].isbn == ISBNanterior:
             posicionInventarioGeneral = i #Saves the position of the book
             break
 
     for libro in inventarioOrdenado: #Looks for the book on each inventory to remove it
         if libro.isbn == ISBNanterior:
-            libroInventarioOrdenado = libro #leaves the loop once its found
-            break
+            libroInventarioOrdenado = libro #found Save reference to the found book
+            break #leaves the loop once its 
     inventarioOrdenado.remove(libroInventarioOrdenado) #Removes the book from the ordered inventory
     guardarInventarioOrdenado(inventarioOrdenado) #Saves the change made
     if isbn:
@@ -329,30 +349,42 @@ def eliminarEstante (id: str):
     from Data.DataManagement import cargarInventarioGeneral, guardarInventarioGeneral
     from Data.DataManagement import cargarInventarioOrdenado, guardarInventarioOrdenado
 
-    listaEstantes= cargarEstantes()
+    listaEstantes= cargarEstantes() #Loads the shelf list
     inventarioGeneral=cargarInventarioGeneral()
     inventarioOrdenado= cargarInventarioOrdenado()
     estanteBuscado = None
 
     idEstanteEliminar= id
-    for estante in listaEstantes:
-        if estante.obtenerID() == idEstanteEliminar:
-            estanteBuscado = estante
-            break
-    listaEstantes.remove(estanteBuscado)
+    for estante in listaEstantes: #goes through the shelf list
+        if estante.obtenerID() == idEstanteEliminar: #If one of the shelves id is the same as the one we are looking to eliminate
+            estanteBuscado = estante #The shelf to be eliminated is the same as that shelf
+            break #already found the shelf so no sense to continue going thought the list
+    listaEstantes.remove(estanteBuscado) #removes the sehlf
 
     #Updates each Book Object by removing the shelf ID from its 'estantes' attribute
     for libro in inventarioGeneral: 
-        libro.estantes = [estante for estante in libro.estantes if estante.obtenerID() != idEstanteEliminar] #Creates a new list that adds the shelf only if its ID is different from the one that was deleted
-    
-    for libro in inventarioOrdenado: #For each book in the organized inventory
-        libro.estantes = [estante for estante in libro.estantes if estante.obtenerID() != idEstanteEliminar] #Creates a new list that adds the shelf only if its ID is different from the one that was deleted
+        libro.estantes = [estante for estante in libro.estantes if estante.obtenerID() != idEstanteEliminar]
+         #Creates a new list that adds the shelf only if its ID is different from the one that was deleted
     
     guardarEstantes(listaEstantes) #Saves
     guardarInventarioGeneral(inventarioGeneral)
     guardarInventarioOrdenado(inventarioOrdenado)
 
     return True  #Returns True so the frontend can show a message that the shelf was successfully deleted
+
+"""Shelf modification"""
+def modificarEstante(viejoID: str, nuevoID: str):
+    """Searches a shelf in the shelf list, and then modifies its id"""
+    from Data.DataManagement import cargarEstantes
+    from Data.DataManagement import guardarEstantes
+
+    listaEstantes = cargarEstantes() #Loads the shelfList
+
+    for estante in listaEstantes: #Loop through each shelf in the list to find the one with the old ID
+        if estante.obtenerID() == viejoID: #Check if the current shelf has the old ID
+            estante.modificarID(nuevoID) #Updates
+            break
+    guardarEstantes(listaEstantes) #saves
 
 """Shelf Module"""
 
@@ -366,29 +398,69 @@ def estanteriaDeficiente(inventarioOrdenado):
         for Libro2 in inventarioOrdenado:
             for Libro3 in inventarioOrdenado:
                 for Libro4 in inventarioOrdenado:
-                    if Libro1.enInventario>0 and Libro2.enInventario>0 and Libro3.enInventario>0 and Libro4.enInventario>0:
-                        #Verifies that the four books are available in the inventory
-                        
-                        if Libro1.peso+Libro2.peso+Libro3.peso+Libro4>8:
-                            #If sum of the weights is above eight the books are added as a list in 'listaLibrosEstanteriaDeficiente'
-
-                            listaLibrosEstanteriaDeficiente.append([Libro1,Libro2,Libro3,Libro4])      
+                    if Libro1.peso + Libro2.peso + Libro3.peso + Libro4.peso > 8:
+                        #Verifies that the four books weight is over 8kg
+                        listaLibrosEstanteriaDeficiente.append([Libro1,Libro2,Libro3,Libro4])      
                                                  
     if len(listaLibrosEstanteriaDeficiente) == 0: #If the cycles are done and the final lenght of store list is zero it means that there are'nt enough books 
         return "No hay suficientes libros" #This messaje shows on the open window 'ventanaEstanterias'
     return listaLibrosEstanteriaDeficiente #Returns the final list
 
-"""Shelf modification"""
-def modificarEstante(viejoID: str, nuevoID: str):
-    """Searches a shelf in the shelf list, and then modifies its id"""
-    from Data.DataManagement import cargarEstantes
-    from Data.DataManagement import guardarEstantes
-    listaEstantes = cargarEstantes() #Loads the shelfList
-    for estante in listaEstantes:
-        if estante.obtenerID() == viejoID:
-            estante.modificarID(nuevoID)
-            break
-    guardarEstantes(listaEstantes)
+"""2. Backtracking"""
+def funcion (inventarioOrdenado): #The opcions will came from the arranged inventory
+    """This method acts as a wrapper function to prepare the enviroment for the backtracking initializating
+    fundamental variables and lists"""
+    maximo=8 #Max weight allowed for shelf
+    combinacionesMaximizadas=[] #The final result of the backtracking
+    mejorPrecioGlobal= [0] #This is created because we need a mutable int, so if we just put an int any change inside the function would not be reflected outside because integers in Python are immutable
+    #This is necessary because we want to compare the price of the current combination with the best global price found so far, within all the recursive calls.
+
+    def backtracking(combinacion, mejorCombinacion, indice):
+        """This method is the backtracking it finds the combination of books from the inventory that maximizes the total price
+        without exceeding 8kg. It recursively explores all possible combinations, taking into account the available copies 
+        'enInventario' of each book it doesn't count the borrowed books.
+        At the end, it displays the optimal combinations and returns them"""
+        #'Combinacion' is a Temporary list that keeps track of the books we are currently trying
+        #mejorCombinacione List that stores the best combination found so far
+
+        precioCombinacion = sum(libro.precio for libro in combinacion) #sum of the price of all the books in the current combination
+        sumaActual= sum(libro.peso for libro in combinacion) #sum of the weights of all the books in the current combination
+
+        print("\nCombinación actual:", [libro.titulo for libro in combinacion], 
+        "| Peso:", round(sumaActual,3), "| Precio:", precioCombinacion)
+
+        if sumaActual > maximo:#If the total weight of the current combination exceeds the maximum, it doesn't make sense to keep adding books
+            print("Se pasa del peso, backtrack")
+            return
+        
+        if precioCombinacion> mejorPrecioGlobal[0]: #If the price from the actual combination is greater than the best one
+            mejorCombinacion[:]=combinacion[:] #We copy all the elements from the list we need them to be the exact same list
+            mejorPrecioGlobal[0] = precioCombinacion #Updates the best price founded
+            combinacionesMaximizadas[:] = [combinacion.copy()] #We save the best combination found on the final result and rewrite over the previous element
+        
+        for i in range(indice, len(inventarioOrdenado)): #Goes throught the arranged list
+            libro= inventarioOrdenado[i] #Brings the actual book
+
+            if libro.enInventario>0: #if there is books 
+                combinacion.append(libro) #Adds the book to the combination 
+                libro.enInventario-=1 #we keep a copy of the book
+
+                backtracking(combinacion, mejorCombinacion, i) #Recursive call
+
+                libro.enInventario+=1 #When backtracking, we return the copy to the inventory and remove it from the combination
+                combinacion.pop() #Backtrack
+                print("Se hace Backtrack:", [libro.titulo for libro in combinacion])
+
+    backtracking([],[],0) #Assures strarting with a empty combination and an empty initial combination
+
+    print("\nCombinaciones máximas encontradas:") #prints the backtracking final results
+    for combinacion in combinacionesMaximizadas:
+        print([libro.titulo for libro in combinacion])
+        
+    return combinacionesMaximizadas
+
+resultadoBacktracking=funcion(inventarioOrdenado)
+
 
 """USER RELATED METHODS"""
 """User List filling"""
@@ -429,11 +501,11 @@ def buscarUsuario(id: str):
         
     return False
 
+"""User deletion"""
 def eliminarUsuario(id: str):
-    """
-    Recibe el ID de un usuario y lo elimina de la lista de usuarios.
-    Mantiene las instancias de memoria correctas al modificar la lista cargada.
-    Devuelve True si se eliminó correctamente, False si el usuario no existe.
+    """Receives a user's ID and removes them from the user list.
+    Maintains correct memory references when modifying the loaded list.
+    Returns True if the user was successfully removed, False if the user does not exist.
     """
     from Data.DataManagement import cargarUsuarios, guardarUsuarios
 
@@ -451,6 +523,18 @@ def eliminarUsuario(id: str):
         return True  #The user has been succesfully eliminated
     else:
         return False  #The user is not in the list
+
+def modificarUsuario(viejoID: str, nuevoID: str):
+    """Searches a user in the users list, and then modifies its id"""
+    from Data.DataManagement import cargarUsuarios
+    from Data.DataManagement import guardarUsuarios
+
+    listaUsuarios = cargarUsuarios()  #Loads the users list
+    for usuario in listaUsuarios:
+        if usuario.id == viejoID:
+            usuario.id = nuevoID  #Updates the user ID
+            break
+    guardarUsuarios(listaUsuarios)  #Saves the modified list
 
 """Stack and Queue Recursion"""
 
