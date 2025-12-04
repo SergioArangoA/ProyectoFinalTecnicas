@@ -228,7 +228,7 @@ def eliminarlibro(isbn: str, cantidad:int):
 
 
 
-def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int):
+def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario = int, prestados = int):
     """This method updates the data of a book, by removing it from both inventories then re-adding it with the new atributes"""
     from Data.DataManagement import cargarInventarioGeneral
     from Data.DataManagement import cargarInventarioOrdenado
@@ -266,6 +266,12 @@ def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: f
 
     if precio:
         libroBuscado.precio = precio
+    
+    if enInventario:
+        libroBuscado.enInventario = enInventario
+    
+    if prestados:
+        libroBuscado.prestados = prestados
 
     #This section updates the inventories
     guardarLibro(libroBuscado.isbn,libroBuscado.titulo,libroBuscado.autor,libroBuscado.peso,libroBuscado.precio,libroBuscado.enInventario,libroBuscado.prestados,libroBuscado.estantes,libroBuscado.listaEspera)
@@ -419,9 +425,9 @@ def buscarUsuario(id: str):
 
     for usuario in listaUsuarios:  #Goes through the list of Users looking for the right User
         if usuario.id == idBuscado:  #Checks if it exists
-            return usuario  #Returns the shelf object if found
+            return usuario  #Returns the user object if found
         
-    return False #Returns false so the frontend can show a message that the shelf does not exist
+    return False
 
 def eliminarUsuario(id: str):
     """
