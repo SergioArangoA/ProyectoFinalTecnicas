@@ -25,7 +25,7 @@ if ROOT not in sys.path:
 # IMPORTS ABSOLUTOS (estos nunca fallan)
 from Data import *
 from Classes.Estante import Estante
-from Data.ManejoListasMaestras import guardarEstanteFuncion, estanteriaDeficiente, funcionBactracking
+from Data.ManejoListasMaestras import guardarEstanteFuncion, estanteriaDeficiente, funcionBactracking, agregarLibroEstante, eliminarEstante
 from GUI import *
 
 #STAND WINDOW
@@ -94,7 +94,7 @@ def abrirEstanterias(ventanaPrincipal):
             tabla.heading('PRECIO',text='PRECIO')
             tabla.pack()
 
-            for libro in estante.listaLibros:
+            for libro in estante.librosEnEstante:
                 tabla.insert(parent='',index=tk.END,values=(libro.isbn, #tk.END agrega el elemento al final de la tabla
                                                         libro.titulo,
                                                         libro.autor,
@@ -170,7 +170,37 @@ def abrirEstanterias(ventanaPrincipal):
         
         else:
             ventanaError("Por favor primero busque un libro antes de eliminarlo")
+    
+    def agregarLibroAEstante():
+        """Adds the book with the desired isbn to the list of books in the stands"""
+        estante = buscarEstante(campoImpresionID.get()) #Checks that the user has previously searched a shelf
+        if estante:
+            isbn = CampoTextoISBN.get()
+            libroAAgregar = buscarLibro(isbn)
+            listaEstantes = cargarEstantes()
+            if libroAAgregar: #Then checks that the book does exist
+                agregarLibroEstante(libroAAgregar,estante.obtenerID,listaEstantes)
 
+            else:
+                ventanaError("No se encontró el libro que deseaba agregar")
+        else:
+            ventanaError("Por favor busque un estante antes de agregarle un libro")
+        
+    def eliminarLibroDeEstante():
+        """Removes the book with the desired isbn to the list of books in the stands"""
+        estante = buscarEstante(campoImpresionID.get()) #Checks that the user has previously searched a shelf
+        if estante:
+            isbn = CampoTextoISBN
+            libroAEliminar = buscarLibro(isbn)
+            listaEstantes = cargarEstantes()
+            if libroAEliminar: #Then checks that the book does exist
+                agregarLibroEstante(libroAEliminar,estante.obtenerID,listaEstantes)
+
+            else:
+                ventanaError("No se encontró el libro que deseaba eliminar")
+        else:
+            ventanaError("Por favor busque un estante antes de eliminarle un libro")
+        estante = buscarEstante(campoImpresionID.get())
         
 
 
@@ -258,7 +288,7 @@ def abrirEstanterias(ventanaPrincipal):
     CampoTextoID.grid(row=0,column=1,pady=10,sticky="w")
     botonAgregar = tk.Button(frameEstante,text="Agregar",command=lambda: guardarEstanterias(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonAgregar.grid(row=1,column=0,padx=10,pady=20,sticky="e")
-    botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palat-ino Linotype", 14), bg="#B6B09F")
+    botonModificar = tk.Button(frameEstante,text="Modificar",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonModificar.grid(row=1,column=1,padx=10,pady=20,sticky="w")
     botonBuscar = tk.Button(frameEstante,text="Buscar", command=lambda: imprimirEstante(),width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonBuscar.grid(row=2,column=0,padx=10,pady=20,sticky="e")
@@ -292,9 +322,9 @@ def abrirEstanterias(ventanaPrincipal):
     CampoTextoISBN= tk.Entry(frameInfoEstanteActual,font=("Palatino Linotype", 14),width=30,bg="#FFFFFF",relief="groove",bd=2)
     CampoTextoISBN.grid(row=4,column=1,pady=10,sticky="w")
 
-    botonAgregarLibro = tk.Button(frameLibros,text="Agregar libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonAgregarLibro = tk.Button(frameLibros,command = lambda: agregarLibroAEstante(),text="Agregar libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonAgregarLibro.grid(row=2,column=0,pady=10,sticky="e",padx=10)
-    botonEliminarLibro = tk.Button(frameLibros,text="Remover libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
+    botonEliminarLibro = tk.Button(frameLibros,command=lambda: eliminarLibroDeEstante(),text="Remover libro",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")
     botonEliminarLibro.grid(row=2,column=1,pady=10,sticky="w",padx=10)
 
     botonOrdenarOptimo = tk.Button(frameLibros,command=lambda: abrirEstanteriaOptima(),text="Ordenamiento óptimo",width=20, height=1, font=("Palatino Linotype", 14), bg="#B6B09F")

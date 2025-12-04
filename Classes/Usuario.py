@@ -67,9 +67,18 @@ class Usuario:
 
             if primeroListaEspera: #Remove user from waitlist if they were first
                 libro.listaEspera.popleft()
+            ventana = tk.Toplevel(bg="#EAE4D5") #Notify that the book has been returned
+            tk.Label(ventana,
+            text="Prestar el libro por un valor de: " + str(libro.precio),
+            font=("Palatino Linotype", 14), bg="#EAE4D5").pack()
 
         else:
             libro.listaEspera.append(self.id)  #Add user ID to waitlist if book cannot be borrowed
+
+            ventana = tk.Toplevel(bg="#EAE4D5") #Notify that the user was added to the waitlist
+            tk.Label(ventana,
+            text="Se ha añadido al usuario a la lista de espera",
+            font=("Palatino Linotype", 14), bg="#EAE4D5").pack()
 
         #Save changes to user and book in persistent storage
         modificarUsuario(self.id, self.id, self.historialPrestados)

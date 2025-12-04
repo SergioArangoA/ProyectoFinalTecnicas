@@ -36,7 +36,7 @@ class Libro:
     #ListaEspera es el nombre del parámetro. Puede ser de tipo deque o None (esa barra | se lee como “o”).
     #El valor por defecto es None. Es decir: si no pasas nada al crear el objeto, ListaEspera será None.
     
-    def __init__(self, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, estantes: list[str],listaEspera: deque | None = None):
+    def __init__(self, isbn: str, titulo: str, autor: str, peso: float, precio: int, enInventario: int, prestados: int, estantes: list[str],listaEspera: list[str] | None = None):
         #con __innit_ definimos los atributos con los que se creara una instancia de la clase. Se especifícan todos los atributos que se importaran
         self.isbn = str(isbn)
         self.titulo = titulo
@@ -45,10 +45,7 @@ class Libro:
         self.precio = precio
         self.enInventario = enInventario
         self.prestados = prestados
-        self.listaEspera = deque()
-        if listaEspera:
-            for usuario in listaEspera:
-                self.listaEspera.append(Usuario(usuario["id"],usuario["historialPrestados"]))
+        self.listaEspera = deque(listaEspera)
         self.estantes = estantes
         #self.atributo = atributo 
         
