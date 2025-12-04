@@ -280,7 +280,7 @@ def modificarLibro(ISBNanterior: str,isbn: str, titulo: str, autor: str, peso: f
     if peso:
         libroBuscado.peso = peso
 
-    if enInventario != None:
+    if enInventario:
         libroBuscado.enInventario = enInventario
 
     if prestados:
@@ -628,7 +628,7 @@ def modificarUsuario(viejoID: str, nuevoID: str,historialReservas = None):
 
 def valorTotalAutor(autor: str, inventarioOrdenado):
     """This function acts as a wrapper for the internal recursive function, initializing the necessary parameters and starting the exploration from the first item in the inventory"""
-    
+    autorNormalizado = normalizar(autor)
     def valorTotalMetodo(n):
         """This method is the recursive technique, calculates the total value of all books written by a specific author"""
 
@@ -639,7 +639,7 @@ def valorTotalAutor(autor: str, inventarioOrdenado):
         libroActual = inventarioOrdenado[n]
         #Extracts the Actual Book from the Inventory
 
-        if libroActual.autor == autor:
+        if normalizar(libroActual.autor) == autorNormalizado:
         #libroActual.autor extracts the author from the object in the Inventory also this if makes the recursive call and sum the valorTotal of the books
             return libroActual.precio + valorTotalMetodo(n + 1)
 
